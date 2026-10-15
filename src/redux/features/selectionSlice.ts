@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { Selection } from "../types";
+import type { Selection } from "../../types";
 const initial: Selection = {
   source: "",
   point: "",

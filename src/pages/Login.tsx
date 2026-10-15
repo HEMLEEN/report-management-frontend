@@ -1,10 +1,11 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../services/api";
-import { useAppDispatch } from "../hooks";
-import { login } from "../features/authSlice";
+import { useAppDispatch } from "../redux/hooks";
 import { LockKeyhole, Mail, User } from "lucide-react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { creatAuthenticate } from "../redux/slices/auth/thunkApi";
 
 type LoginForm = {
   userCode: string;
@@ -12,9 +13,9 @@ type LoginForm = {
 };
 
 const Login = () => {
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin123");
   const [doLogin, { isLoading, error }] = useLoginMutation();
+
+  const [loginError, setLoginError] = useState("");
   const {
     register,
     handleSubmit,
@@ -24,50 +25,24 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (data: any) => {
+    console.log("data", data);
+    setLoginError("");
     try {
-      //  setLoading(true);
-      //  setIsLoggedIn(true);
-      navigate("/setup");
+      const response = await dispatch(creatAuthenticate(data)).unwrap();
+      console.log("response", response);
 
-      // const response = await axios.post("http://localhost:8140/auth/login", data);
-
-      // localStorage.setItem(
-      //     "accessToken",
-      //     response.data.accessToken
-      // );
-
-      // localStorage.setItem(
-      //     "user",
-      //     JSON.stringify(response.data)
-      // );
-
-      // const user = {
-      //     userCode: "admin",
-      //     password: "admin123",
-      //     role: "Admin",
-      // }
-
-      // switch (user.role) {
-      //     case "Admin":
-      //         navigate("/dashboard");
-      //         break;
-
-      //     case "Agent":
-      //         navigate("/customer");
-      //         break;
-
-      //     case "Customer":
-      //         navigate("/chit");
-      //         break;
-
-      //     default:
-      //         navigate("/");
-      // }
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Login Failed");
-    } finally {
-      //  setLoading(false);
+      if (response.status == "success") {
+        // Save tokens only after successful authentication
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        navigate("/setup");
+      }
+      // Navigate only after successful login
+    } catch (error) {
+      setLoginError(
+        typeof error === "string" ? error : "Invalid user ID or password",
+      );
     }
   };
 
@@ -110,7 +85,6 @@ const Login = () => {
                 <User size={17} className="text-slate-400" />
                 <input
                   type="text"
-                  value={1}
                   {...register("userCode", {
                     required: "User Id is required",
                   })}
@@ -130,7 +104,6 @@ const Login = () => {
                 <LockKeyhole size={17} className="text-slate-400" />
                 <input
                   type="password"
-                  value={1}
                   {...register("password", {
                     required: "Password is required",
                     // minLength: {
@@ -167,9 +140,7 @@ const Login = () => {
             Sign in
             {/* {doLogin.isLoading ? "Signing in..." : "Sign in"} */}
           </button>
-          <p className="mt-4 text-center text-xs text-slate-400">
-            Demo: admin@example.com / admin123
-          </p>
+          <p className="mt-4 text-center text-2xl text-red-400">{loginError}</p>
         </form>
       </div>
     </div>

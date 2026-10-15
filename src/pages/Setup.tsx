@@ -4,13 +4,13 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Building2, Check, ChevronRight, UsersRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setCompany,
   setPoint,
   setSegment,
   setSource,
-} from "../features/selectionSlice";
+} from "../redux/features/selectionSlice";
 
 import { companies, reportMode, reportOptions } from "../Data/setup";
 

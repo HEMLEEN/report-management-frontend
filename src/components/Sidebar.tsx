@@ -14,9 +14,8 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import { useAppDispatch } from "../hooks";
-import { logout } from "../features/authSlice";
-import { resetSelection } from "../features/selectionSlice";
+import { useAppDispatch } from "../redux/hooks";
+import { resetSelection } from "../redux/features/selectionSlice";
 import { useState } from "react";
 const groups = [
   {
@@ -96,18 +95,18 @@ export default function Sidebar() {
                     {["Appointments", "Users", "Clients"].includes(
                       String(label),
                     ) && (
-                        <ChevronDown
-                          size={15}
-                          className="ml-auto"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOpen((s) => ({
-                              ...s,
-                              [String(label)]: !s[String(label)],
-                            }));
-                          }}
-                        />
-                      )}
+                      <ChevronDown
+                        size={15}
+                        className="ml-auto"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpen((s) => ({
+                            ...s,
+                            [String(label)]: !s[String(label)],
+                          }));
+                        }}
+                      />
+                    )}
                   </NavLink>
                   {open[String(label)] && String(label) === "Appointments" && (
                     <div className="ml-10 mt-1 space-y-1 text text-sm text-slate-400">
@@ -132,7 +131,7 @@ export default function Sidebar() {
         ))}
         <button
           onClick={() => {
-            dispatch(logout());
+            // dispatch(logout());
             dispatch(resetSelection());
             nav("/login");
           }}

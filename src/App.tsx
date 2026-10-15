@@ -10,9 +10,13 @@ import Schedule from "./pages/Schedule";
 import Location from "./pages/Location";
 import Clients from "./pages/Clients";
 import Placeholder from "./pages/Placeholder";
-import { useAppSelector } from "./hooks";
+import { useAppSelector } from "./redux/hooks";
 function Guard({ children }: { children: React.ReactNode }) {
-  const token = useAppSelector((s) => s.auth.token);
+  const token = useAppSelector((s) => s.auth.login?.data.accessToken);
+  console.log(
+    "token",
+    useAppSelector((s) => s),
+  );
   return token ? children : <Navigate to="/login" replace />;
 }
 function App() {
@@ -22,9 +26,9 @@ function App() {
       <Route
         path="/setup"
         element={
-          //   <Guard>
-          <Setup />
-          //   </Guard>
+          <Guard>
+            <Setup />
+          </Guard>
         }
       />
       <Route
