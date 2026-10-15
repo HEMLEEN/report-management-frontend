@@ -1,9 +1,2 @@
-import { useEffect, useState } from 'react';
-import { Appointment } from '../types';
-import api from '../services/api';
-
-export default function Appointments() {
-  const [items, setItems] = useState<Appointment[]>([]);
-  useEffect(()=>{api.get<Appointment[]>('/appointments').then(r=>setItems(r.data));},[]);
-  return <div><div className="mb-7"><p className="text-sm font-semibold text-brand-600">Admin</p><h1 className="text-3xl font-bold">Appointments</h1><p className="mt-1 text-sm text-slate-500">Upcoming and recent appointments.</p></div><div className="card overflow-hidden"><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-400"><tr><th className="px-5 py-4">Client</th><th>Date</th><th>Time</th><th>Purpose</th><th>Status</th></tr></thead><tbody>{items.map(x=><tr key={x.id} className="border-t border-slate-100"><td className="px-5 py-4 font-semibold">{x.client}</td><td>{x.date}</td><td>{x.time}</td><td>{x.purpose}</td><td><span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">{x.status}</span></td></tr>)}</tbody></table></div></div></div>;
-}
+import CrudPage from './CrudPage';import {useAppointmentsQuery,useCreateAppointmentMutation,useUpdateAppointmentMutation,useDeleteAppointmentMutation} from '../services/api';import type {Appointment} from '../types'
+export default function Appointments(){const{data=[]}=useAppointmentsQuery();const[c]=useCreateAppointmentMutation();const[u]=useUpdateAppointmentMutation();const[d]=useDeleteAppointmentMutation();const fields=[{key:'title' as keyof Appointment,label:'Title'},{key:'client' as keyof Appointment,label:'Client'},{key:'date' as keyof Appointment,label:'Date',type:'date'},{key:'time' as keyof Appointment,label:'Time',type:'time'},{key:'status' as keyof Appointment,label:'Status'},{key:'location' as keyof Appointment,label:'Location'}];return <CrudPage title="Appointments" description="Create, update and delete appointments." data={data} fields={fields} columns={fields.map(f=>({key:f.key,label:f.label}))} onCreate={async x=>{await c(x)}} onUpdate={async(id,x)=>{await u({id,body:x})}} onDelete={async id=>{if(confirm('Delete this appointment?'))await d(id)}}/>}

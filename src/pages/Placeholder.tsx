@@ -1,4 +1,1 @@
-import { FileBarChart } from 'lucide-react';
-export default function Placeholder({ title }: { title: string }) {
-  return <div><div className="mb-7"><p className="text-sm font-semibold text-brand-600">Module</p><h1 className="text-3xl font-bold">{title}</h1><p className="mt-1 text-sm text-slate-500">This module is connected to the application shell and ready for its CRUD/API implementation.</p></div><div className="card grid min-h-72 place-items-center p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600"><FileBarChart/></div><h2 className="mt-4 font-bold">Module ready</h2><p className="mt-1 text-sm text-slate-500">Add the module-specific forms, tables and API calls here.</p></div></div></div>;
-}
+export default function Placeholder({title}:{title:string}){return <div className="rounded-2xl bg-white p-10 text-center shadow-soft"><h2 className="text-2xl font-bold">{title}</h2><p className="mt-2 text-slate-400">This module is ready for your next business rules and API fields.</p></div>}
