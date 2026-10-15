@@ -1,3 +1,127 @@
-import {Building2,Check,ChevronRight,UsersRound} from 'lucide-react';import {useAppDispatch,useAppSelector} from '../hooks';import {setCompany,setPoint,setSegment,setSource} from '../features/selectionSlice';import {useNavigate} from 'react-router-dom'
-const sources=['Website','Referral','Walk-in','Social Media'];const points:Record<string,string[]>= {'Website':['Contact Form','Landing Page','Google'],Referral:['Existing Client','Partner','Employee'], 'Walk-in':['Reception','Event'],'Social Media':['Instagram','Facebook','LinkedIn']};const companies=['Forsite','Modhaus','Fanzart']
-export default function Setup(){const s=useAppSelector(x=>x.selection);const d=useAppDispatch();const nav=useNavigate();const done=s.source&&s.point&&s.company;return <div className="mx-auto max-w-5xl py-8"><div className="mb-10 text-center"><div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-brand text-white font-bold">RM</div><h1 className="text-3xl font-bold">Set up your workspace</h1><p className="mt-2 text-slate-500">Complete the selections below before entering the main panel.</p></div><div className="space-y-6"><section className="rounded-2xl bg-white p-6 shadow-soft"><div className="mb-4 flex items-center gap-3"><UsersRound className="text-brand"/><div><h2 className="font-semibold">1. Source of Contact</h2><p className="text-sm text-slate-400">Choose how the contact reached you.</p></div></div><select value={s.source} onChange={e=>d(setSource(e.target.value))} className="w-full rounded-xl border px-4 py-3"><option value="">Select Source</option>{sources.map(x=><option key={x}>{x}</option>)}</select></section>{s.source&&<section className="rounded-2xl bg-white p-6 shadow-soft"><h2 className="mb-4 font-semibold">2. Point of Contact</h2><select value={s.point} onChange={e=>d(setPoint(e.target.value))} className="w-full rounded-xl border px-4 py-3"><option value="">Select Point of Contact</option>{points[s.source].map(x=><option key={x}>{x}</option>)}</select></section>}{s.point&&<section className="rounded-2xl bg-white p-6 shadow-soft"><h2 className="mb-4 font-semibold">3. Select Company</h2><div className="grid gap-4 md:grid-cols-3">{companies.map(c=><button key={c} onClick={()=>d(setCompany(c))} className={`rounded-2xl border p-6 text-left transition ${s.company===c?'border-brand bg-brand/5 ring-2 ring-brand/10':'hover:-translate-y-0.5 hover:shadow-md'}`}><div className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-slate-100"><Building2 className="text-brand"/></div><div className="font-semibold">{c}</div><div className="mt-1 text-sm text-slate-400">Select this workspace</div></button>)}</div></section>}{s.company&&<section className="rounded-2xl bg-white p-6 shadow-soft"><h2 className="mb-4 font-semibold">4. Select Business Type</h2><div className="grid gap-4 md:grid-cols-2">{(['Residential','Commercial'] as const).map(x=><button key={x} onClick={()=>d(setSegment(x))} className={`rounded-2xl border p-5 text-left ${s.segment===x?'border-brand bg-brand/5':''}`}><div className="font-semibold">{x}</div><div className="mt-1 text-sm text-slate-400">{x==='Residential'?'Residential projects and customers':'Commercial projects and customers'}</div>{s.segment===x&&<Check className="mt-3 text-brand"/>}</button>)}</div><button disabled={!done} onClick={()=>nav('/')} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">Continue to Dashboard <ChevronRight size={18}/></button></section>}</div></div>}
+import { Building2, Check, ChevronRight, UsersRound } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import {
+  setCompany,
+  setPoint,
+  setSegment,
+  setSource,
+} from "../features/selectionSlice";
+import { useNavigate } from "react-router-dom";
+
+const sources = ["Website", "Referral", "Walk-in", "Social Media"];
+const points: Record<string, string[]> = {
+  Website: ["Contact Form", "Landing Page", "Google"],
+  Referral: ["Existing Client", "Partner", "Employee"],
+  "Walk-in": ["Reception", "Event"],
+  "Social Media": ["Instagram", "Facebook", "LinkedIn"],
+};
+const companies = ["Forsite", "Modhaus", "Fanzart"];
+
+export default function Setup() {
+  const s = useAppSelector((x) => x.selection);
+  const d = useAppDispatch();
+  const nav = useNavigate();
+  const done = s.source && s.point && s.company;
+  return (
+    <div className="mx-auto max-w-5xl py-8">
+      <div className="mb-10 text-center">
+        <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-brand text-white font-bold">
+          RM
+        </div>
+        <h1 className="text-3xl font-bold">Set up your workspace</h1>
+        <p className="mt-2 text-slate-500">
+          Complete the selections below before entering the main panel.
+        </p>
+      </div>
+      <div className="space-y-6">
+        <section className="rounded-2xl bg-white p-6 shadow-soft">
+          <div className="mb-4 flex items-center gap-3">
+            <UsersRound className="text-brand" />
+            <div>
+              <h2 className="font-semibold">1. Source of Contact</h2>
+              <p className="text-sm text-slate-400">
+                Choose how the contact reached you.
+              </p>
+            </div>
+          </div>
+          <select
+            value={s.source}
+            onChange={(e) => d(setSource(e.target.value))}
+            className="w-full rounded-xl border px-4 py-3"
+          >
+            <option value="">Select Source</option>
+            {sources.map((x) => (
+              <option key={x}>{x}</option>
+            ))}
+          </select>
+        </section>
+        {s.source && (
+          <section className="rounded-2xl bg-white p-6 shadow-soft">
+            <h2 className="mb-4 font-semibold">2. Point of Contact</h2>
+            <select
+              value={s.point}
+              onChange={(e) => d(setPoint(e.target.value))}
+              className="w-full rounded-xl border px-4 py-3"
+            >
+              <option value="">Select Point of Contact</option>
+              {points[s.source].map((x) => (
+                <option key={x}>{x}</option>
+              ))}
+            </select>
+          </section>
+        )}
+        {s.point && (
+          <section className="rounded-2xl bg-white p-6 shadow-soft">
+            <h2 className="mb-4 font-semibold">3. Select Company</h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              {companies.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => d(setCompany(c))}
+                  className={`rounded-2xl border p-6 text-left transition ${s.company === c ? "border-brand bg-brand/5 ring-2 ring-brand/10" : "hover:-translate-y-0.5 hover:shadow-md"}`}
+                >
+                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-slate-100">
+                    <Building2 className="text-brand" />
+                  </div>
+                  <div className="font-semibold">{c}</div>
+                  <div className="mt-1 text-sm text-slate-400">
+                    Select this workspace
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+        {s.company && (
+          <section className="rounded-2xl bg-white p-6 shadow-soft">
+            <h2 className="mb-4 font-semibold">4. Select Business Type</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {(["Residential", "Commercial"] as const).map((x) => (
+                <button
+                  key={x}
+                  onClick={() => d(setSegment(x))}
+                  className={`rounded-2xl border p-5 text-left ${s.segment === x ? "border-brand bg-brand/5" : ""}`}
+                >
+                  <div className="font-semibold">{x}</div>
+                  <div className="mt-1 text-sm text-slate-400">
+                    {x === "Residential"
+                      ? "Residential projects and customers"
+                      : "Commercial projects and customers"}
+                  </div>
+                  {s.segment === x && <Check className="mt-3 text-brand" />}
+                </button>
+              ))}
+            </div>
+            <button
+              disabled={!done}
+              onClick={() => nav("/")}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Continue to Dashboard <ChevronRight size={18} />
+            </button>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}

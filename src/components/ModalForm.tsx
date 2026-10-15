@@ -1,2 +1,37 @@
-import {FormEvent,ReactNode} from 'react';import Modal from './Modal'
-export default function ModalForm({open,onClose,title,onSubmit,children,submitLabel='Save'}:{open:boolean;onClose:()=>void;title:string;onSubmit:(e:FormEvent)=>void;children:ReactNode;submitLabel?:string}){return <Modal open={open} onClose={onClose} title={title}><form onSubmit={onSubmit} className="space-y-4">{children}<div className="flex justify-end gap-3 pt-3"><button type="button" onClick={onClose} className="rounded-xl border px-4 py-2">Cancel</button><button className="rounded-xl bg-brand px-5 py-2 font-medium text-white">{submitLabel}</button></div></form></Modal>}
+import { FormEvent, ReactNode } from "react";
+import Modal from "./Modal";
+export default function ModalForm({
+  open,
+  onClose,
+  title,
+  onSubmit,
+  children,
+  submitLabel = "Save",
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  onSubmit: (e: FormEvent) => void;
+  children: ReactNode;
+  submitLabel?: string;
+}) {
+  return (
+    <Modal open={open} onClose={onClose} title={title}>
+      <form onSubmit={onSubmit} className="space-y-4">
+        {children}
+        <div className="flex justify-end gap-3 pt-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border px-4 py-2"
+          >
+            Cancel
+          </button>
+          <button className="rounded-xl bg-brand px-5 py-2 font-medium text-white">
+            {submitLabel}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}

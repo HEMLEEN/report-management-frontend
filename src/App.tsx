@@ -1,4 +1,60 @@
-import {Navigate,Route,Routes} from 'react-router-dom';import Layout from './components/Layout';import Login from './pages/Login';import Setup from './pages/Setup';import Dashboard from './pages/Dashboard';import Appointments from './pages/Appointments';import Users from './pages/Users';import Departments from './pages/Departments';import Schedule from './pages/Schedule';import Location from './pages/Location';import Clients from './pages/Clients';import Placeholder from './pages/Placeholder';import {useAppSelector} from './hooks'
-function Guard({children}:{children:React.ReactNode}){const token=useAppSelector(s=>s.auth.token);return token?children:<Navigate to="/login" replace/>}
-function App(){return <Routes><Route path="/login" element={<Login/>}/><Route path="/setup" element={<Guard><Setup/></Guard>}/><Route element={<Guard><Layout/></Guard>}><Route path="/" element={<Dashboard/>}/><Route path="/appointments" element={<Appointments/>}/><Route path="/schedule" element={<Schedule/>}/><Route path="/users" element={<Users/>}/><Route path="/clients" element={<Clients/>}/><Route path="/location" element={<Location/>}/><Route path="/departments" element={<Departments/>}/><Route path="/visitors" element={<Placeholder title="Visitors"/>}/><Route path="/services" element={<Placeholder title="Services"/>}/><Route path="/activities" element={<Placeholder title="Activities"/>}/><Route path="/reports" element={<Placeholder title="Reports"/>}/><Route path="/leaves" element={<Placeholder title="Leaves"/>}/><Route path="/expense" element={<Placeholder title="Expense"/>}/><Route path="/income" element={<Placeholder title="Income"/>}/><Route path="/invoice" element={<Placeholder title="Invoice"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Route></Routes>}
-export default App
+import { Navigate, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import Login from "./pages/Login";
+import Setup from "./pages/Setup";
+import Dashboard from "./pages/Dashboard";
+import Appointments from "./pages/Appointments";
+import Users from "./pages/Users";
+import Departments from "./pages/Departments";
+import Schedule from "./pages/Schedule";
+import Location from "./pages/Location";
+import Clients from "./pages/Clients";
+import Placeholder from "./pages/Placeholder";
+import { useAppSelector } from "./hooks";
+function Guard({ children }: { children: React.ReactNode }) {
+  const token = useAppSelector((s) => s.auth.token);
+  return token ? children : <Navigate to="/login" replace />;
+}
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/setup"
+        element={
+          //   <Guard>
+          <Setup />
+          //   </Guard>
+        }
+      />
+      <Route
+        element={
+          //   <Guard>
+          <Layout />
+          //   </Guard>
+        }
+      >
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/schedule" element={<Schedule />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/location" element={<Location />} />
+        <Route path="/departments" element={<Departments />} />
+        <Route path="/visitors" element={<Placeholder title="Visitors" />} />
+        <Route path="/services" element={<Placeholder title="Services" />} />
+        <Route
+          path="/activities"
+          element={<Placeholder title="Activities" />}
+        />
+        <Route path="/reports" element={<Placeholder title="Reports" />} />
+        <Route path="/leaves" element={<Placeholder title="Leaves" />} />
+        <Route path="/expense" element={<Placeholder title="Expense" />} />
+        <Route path="/income" element={<Placeholder title="Income" />} />
+        <Route path="/invoice" element={<Placeholder title="Invoice" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
+export default App;

@@ -1,0 +1,20 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="40"
+  height="40"
+  viewBox="0 0 40 40"
+  fill="none"
+>
+  <rect width="40" height="40" rx="10" fill="#2563EB" />
+
+  <path
+    d="M11 28V12H19C22 12 24 14 24 17C24 19 23 21 21 22L25 28H20L16.5 22.5H15.5V28H11Z"
+    fill="white"
+  />
+
+  <path
+    d="M26 28V12H30L33 20L36 12H39V28H35V20L33 25H31L29 20V28H26Z"
+    fill="white"
+    transform="translate(-2 0)"
+  />
+</svg>

@@ -1,2 +1,61 @@
-import {Outlet,useLocation} from 'react-router-dom';import Sidebar from './Sidebar';import {Menu,Search,Bell} from 'lucide-react';import {useState} from 'react'
-export default function Layout(){const[mobile,setMobile]=useState(false);const loc=useLocation();const title=loc.pathname==='/'?'Dashboard':loc.pathname.slice(1).replace(/-/g,' ');return <div className="min-h-screen"><Sidebar/>{mobile&&<div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={()=>setMobile(false)}/>}<header className="fixed left-0 right-0 top-0 z-20 h-20 border-b bg-white/95 backdrop-blur lg:left-64"><div className="flex h-full items-center justify-between px-4 sm:px-6"><div className="flex items-center gap-3"><button className="lg:hidden" onClick={()=>setMobile(v=>!v)}><Menu/></button><div><h1 className="text-xl font-bold capitalize">{title}</h1><p className="hidden text-xs text-slate-400 sm:block">Manage your operations from one place</p></div></div><div className="flex items-center gap-3"><div className="hidden items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 md:flex"><Search size={16} className="text-slate-400"/><input className="w-36 bg-transparent text-sm outline-none" placeholder="Search..."/></div><button className="rounded-xl p-2 hover:bg-slate-50"><Bell size={19}/></button><div className="grid h-9 w-9 place-items-center rounded-full bg-brand/10 font-semibold text-brand">H</div></div></div></header>{mobile&&<div className="fixed inset-y-0 left-0 z-50 w-64 bg-white lg:hidden"><Sidebar/></div>}<main className="pt-20 lg:ml-64"><div className="p-4 sm:p-6">{<Outlet/>}</div></main></div>}
+import { Outlet, useLocation } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import { Menu, Search, Bell } from "lucide-react";
+import { useState } from "react";
+export default function Layout() {
+  const [mobile, setMobile] = useState(false);
+  const loc = useLocation();
+  const title =
+    loc.pathname === "/"
+      ? "Dashboard"
+      : loc.pathname.slice(1).replace(/-/g, " ");
+  return (
+    <div className="min-h-screen">
+      <Sidebar />
+      {mobile && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setMobile(false)}
+        />
+      )}
+      <header className="fixed left-0 right-0 top-0 z-20 h-20 border-b bg-white/95 backdrop-blur lg:left-64">
+        <div className="flex h-full items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <button className="lg:hidden" onClick={() => setMobile((v) => !v)}>
+              <Menu />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold capitalize">{title}</h1>
+              <p className="hidden text-xs text-slate-400 sm:block">
+                Manage your operations from one place
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 md:flex">
+              <Search size={16} className="text-slate-400" />
+              <input
+                className="w-36 bg-transparent text-sm outline-none"
+                placeholder="Search..."
+              />
+            </div>
+            <button className="rounded-xl p-2 hover:bg-slate-50">
+              <Bell size={19} />
+            </button>
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-brand/10 font-semibold text-brand">
+              H
+            </div>
+          </div>
+        </div>
+      </header>
+      {mobile && (
+        <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white lg:hidden">
+          <Sidebar />
+        </div>
+      )}
+      <main className="pt-20 lg:ml-64">
+        <div className="p-4 sm:p-6">{<Outlet />}</div>
+      </main>
+    </div>
+  );
+}

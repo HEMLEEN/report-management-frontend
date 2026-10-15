@@ -13,8 +13,8 @@ export default function Login() {
   const submit = async (e: FormEvent) => {
     // e.preventDefault();
     try {
-    //   const r = await doLogin({ email, password }).unwrap();
-    //   dispatch(login(r));
+      //   const r = await doLogin({ email, password }).unwrap();
+      //   dispatch(login(r));
       nav("/setup");
     } catch {}
   };
@@ -74,10 +74,11 @@ export default function Login() {
             </p>
           )}
           <button
-            disabled={doLogin.isLoading}
+            // disabled={doLogin.isLoading}
             className="mt-6 w-full rounded-xl bg-brand py-3 font-semibold text-white disabled:opacity-60"
           >
-            {doLogin.isLoading ? "Signing in..." : "Sign in"}
+            Sign in
+            {/* {doLogin.isLoading ? "Signing in..." : "Sign in"} */}
           </button>
           <p className="mt-4 text-center text-xs text-slate-400">
             Demo: admin@example.com / admin123
