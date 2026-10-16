@@ -11,6 +11,7 @@ import Location from "./pages/Location";
 import Clients from "./pages/Clients";
 import Placeholder from "./pages/Placeholder";
 import { useAppSelector } from "./redux/hooks";
+import ReportMode from "./pages/Setup/ReportMode";
 function Guard({ children }: { children: React.ReactNode }) {
   const token = useAppSelector((s) => s.auth.login?.data.accessToken);
   console.log(
@@ -22,15 +23,23 @@ function Guard({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
       <Route
+        path="/reportMode"
+        element={
+          <Guard>
+            <ReportMode />
+          </Guard>
+        }
+      />
+      {/* <Route
         path="/setup"
         element={
           <Guard>
             <Setup />
           </Guard>
         }
-      />
+      /> */}
       <Route
         element={
           //   <Guard>
@@ -38,7 +47,7 @@ function App() {
           //   </Guard>
         }
       >
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/users" element={<Users />} />

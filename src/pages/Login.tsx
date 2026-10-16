@@ -26,17 +26,15 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data: any) => {
-    console.log("data", data);
     setLoginError("");
     try {
       const response = await dispatch(creatAuthenticate(data)).unwrap();
-      console.log("response", response);
 
       if (response.status == "success") {
         // Save tokens only after successful authentication
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
-        navigate("/setup");
+        navigate("/reportMode");
       }
       // Navigate only after successful login
     } catch (error) {
