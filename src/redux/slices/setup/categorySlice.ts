@@ -21,23 +21,23 @@ interface CategoryResponse {
 }
 
 interface CategoryState {
-  list: CategoryItem[];
-  loading: {
+  listOfCategories: CategoryItem[];
+  isCategoryLoading: {
     create: boolean;
     list: boolean;
   };
   message: string;
-  error: string | null;
+  categoryError: string | null;
 }
 
 const initialState: CategoryState = {
-  list: [],
-  loading: {
+  listOfCategories: [],
+  isCategoryLoading: {
     create: false,
     list: false,
   },
   message: "",
-  error: null,
+  categoryError: null,
 };
 
 const categorySlice = createSlice({
@@ -51,33 +51,33 @@ const categorySlice = createSlice({
 
       // Create report mode stats
       .addCase(createCategory.pending, (state) => {
-        state.loading.create = true;
+        state.isCategoryLoading.create = true;
       })
       .addCase(createCategory.fulfilled, (state, action) => {
-        state.loading.create = false;
+        state.isCategoryLoading.create = false;
         state.message = action.payload;
       })
       .addCase(createCategory.rejected, (state, action) => {
-        state.loading.create = false;
-        state.error = action.payload as string;
+        state.isCategoryLoading.create = false;
+        state.categoryError = action.payload as string;
       })
 
       // List report mode stats
       .addCase(listCategory.pending, (state) => {
-        state.loading.list = true;
-        state.error = null;
+        state.isCategoryLoading.list = true;
+        state.categoryError = null;
       })
       .addCase(listCategory.fulfilled, (state, action) => {
-        state.loading.list = false;
+        state.isCategoryLoading.list = false;
 
         const response = action.payload as CategoryResponse;
 
-        state.list = response.data;
+        state.listOfCategories = response.data;
         state.message = response.message;
       })
       .addCase(listCategory.rejected, (state, action) => {
-        state.loading.list = false;
-        state.error = action.payload as string;
+        state.isCategoryLoading.list = false;
+        state.categoryError = action.payload as string;
       });
   },
 });

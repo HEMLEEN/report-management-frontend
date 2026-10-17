@@ -25,22 +25,22 @@ interface ReportModeResponse {
 
 interface ReportModeState {
   list: ReportModeItem[];
-  loading: {
+  isReportModeLoading: {
     create: boolean;
     list: boolean;
   };
   message: string;
-  error: string | null;
+  reportModeError: string | null;
 }
 
 const initialState: ReportModeState = {
   list: [],
-  loading: {
+  isReportModeLoading: {
     create: false,
     list: false,
   },
   message: "",
-  error: null,
+  reportModeError: null,
 };
 
 const reportModeSlice = createSlice({
@@ -56,24 +56,24 @@ const reportModeSlice = createSlice({
 
       // Create report mode stats
       .addCase(createReportMode.pending, (state) => {
-        state.loading.create = true;
+        state.isReportModeLoading.create = true;
       })
       .addCase(createReportMode.fulfilled, (state, action) => {
-        state.loading.create = false;
+        state.isReportModeLoading.create = false;
         state.message = action.payload;
       })
       .addCase(createReportMode.rejected, (state, action) => {
-        state.loading.create = false;
-        state.error = action.payload as string;
+        state.isReportModeLoading.create = false;
+        state.reportModeError = action.payload as string;
       })
 
       // List report mode stats
       .addCase(listReportMode.pending, (state) => {
-        state.loading.list = true;
-        state.error = null;
+        state.isReportModeLoading.list = true;
+        state.reportModeError = null;
       })
       .addCase(listReportMode.fulfilled, (state, action) => {
-        state.loading.list = false;
+        state.isReportModeLoading.list = false;
 
         const response = action.payload as ReportModeResponse;
 
@@ -81,8 +81,8 @@ const reportModeSlice = createSlice({
         state.message = response.message;
       })
       .addCase(listReportMode.rejected, (state, action) => {
-        state.loading.list = false;
-        state.error = action.payload as string;
+        state.isReportModeLoading.list = false;
+        state.reportModeError = action.payload as string;
       });
 
   },

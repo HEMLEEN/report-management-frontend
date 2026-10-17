@@ -1,12 +1,12 @@
 import axiosInstance from "../../service/axios";
 
 export const createReportModeApi = async ({ name }: any) => {
-  const response = await axiosInstance.post("/report/mode", { name });
+  const response = await axiosInstance.post("/report", { name });
   return response.data;
 };
 
 export const listReportModeApi = async ({ name }: any) => {
-  const response = await axiosInstance.post("/report/mode/list", { name });
+  const response = await axiosInstance.post("/report/list", { name });
   return response.data;
 };
 

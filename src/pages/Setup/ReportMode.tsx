@@ -73,7 +73,8 @@ const ReportMode = () => {
   const selectedCategories = watchAssign("category");
   const selectedCompanies = watchAssign("compny");
 
-  const { list, loading, error } = useAppSelector((state) => state.reportMode);
+  const { list, isReportModeLoading, reportModeError } = useAppSelector((state) => state.reportMode);
+  const { listOfCategories, isCategoryLoading, categoryError } = useAppSelector((state) => state.category);
 
   // Replace these selectors with your actual category/company Redux slices.
   // Each item must contain _id and name.
@@ -303,11 +304,11 @@ const ReportMode = () => {
           <div className="mt-6 space-y-3">
             <h3 className="font-semibold">Report Mode List</h3>
 
-            {loading.list && <p>Loading report modes...</p>}
+            {isReportModeLoading.list && <p>Loading report modes...</p>}
 
-            {error && <p className="text-sm text-red-500">{String(error)}</p>}
+            {reportModeError && <p className="text-sm text-red-500">{String(reportModeError)}</p>}
 
-            {!loading.list && list.length === 0 && (
+            {!isReportModeLoading.list && list.length === 0 && (
               <p className="text-sm text-gray-500">No report modes found.</p>
             )}
 
@@ -436,7 +437,7 @@ const ReportMode = () => {
                     className="w-full rounded-lg border border-gray-300 px-3 py-2.5"
                   >
                     <option value="">Select Report Mode</option>
-                    {list.map((item) => (
+                    {listOfCategories.map((item) => (
                       <option key={item._id} value={item._id}>
                         {item.name}
                       </option>
