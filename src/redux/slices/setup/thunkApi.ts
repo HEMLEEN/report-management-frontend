@@ -6,6 +6,8 @@ import {
   listReportModeApi,
   assignCompanyApi,
   assignCategoryApi,
+  listCategoryApi,
+  listCompanyApi,
 } from "./apiCalls";
 
 export const createReportMode = createAsyncThunk(
@@ -82,7 +84,7 @@ export const listCategory = createAsyncThunk(
   "form/listCategory",
   async (body: any, thunkAPI) => {
     try {
-      const response = await listReportModeApi(body);
+      const response = await listCategoryApi(body);
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -110,7 +112,7 @@ export const listCompany = createAsyncThunk(
   "form/listCompany",
   async (body: any, thunkAPI) => {
     try {
-      const response = await listReportModeApi(body);
+      const response = await listCompanyApi(body);
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(

@@ -1,11 +1,11 @@
 import axiosInstance from "../../service/axios";
 
-export const createLoginApi = async (formData: FormData) => {
-  const response = await axiosInstance.post("/login/create", formData);
+export const createLoginApi = async (data: any) => {
+  const response = await axiosInstance.post("/login/register", data);
   return response.data;
 };
 
-export const createAuthenticateApi = async (formData: FormData) => {
-  const response = await axiosInstance.post("/login", formData);
+export const createAuthenticateApi = async (data: any) => {
+  const response = await axiosInstance.post("/login", data);
   return response.data;
 };

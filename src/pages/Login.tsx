@@ -1,11 +1,13 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../services/api";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { LockKeyhole, Mail, User } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { creatAuthenticate } from "../redux/slices/auth/thunkApi";
+import ErrorMessage from "../components/ErrorMessage";
+import ErrorModal from "../components/ErrorModal";
+import { getRoleHome } from "../middleware/roleNavigation";
 
 type LoginForm = {
   userCode: string;
@@ -13,9 +15,12 @@ type LoginForm = {
 };
 
 const Login = () => {
-  const [doLogin, { isLoading, error }] = useLoginMutation();
 
-  const [loginError, setLoginError] = useState("");
+  const [errorModal, setErrorModal] = useState({
+    isOpen: false,
+    message: "",
+  });
+  const [loginError, setLoginError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -25,33 +30,52 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const onSubmit = async (data: any) => {
-    setLoginError("");
-    try {
-      const response = await dispatch(creatAuthenticate(data)).unwrap();
+  const onSubmit: SubmitHandler<LoginForm> = async (data: any) => {
+    setLoginError(null);
 
-      if (response.status == "success") {
-        // Save tokens only after successful authentication
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        navigate("/reportMode");
+    try {
+      const response = await dispatch(
+        creatAuthenticate(data)
+      ).unwrap();
+
+      if (response.status !== "success") {
+        setErrorModal({
+          isOpen: true,
+          message: "Login failed. Please try again.",
+        });
+        return;
       }
-      // Navigate only after successful login
-    } catch (error) {
-      setLoginError(
-        typeof error === "string" ? error : "Invalid user ID or password",
-      );
+
+      const { accessToken, refreshToken, user } = response.data;
+
+      // Store tokens
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      // Get roles returned by your backend
+      const roles: string[] = user?.roles ?? [];
+
+      if (roles.length === 0) {
+        setErrorModal({
+          isOpen: true,
+          message: "No roles assigned to this user. Contact your administrator.",
+        });
+        return;
+      }
+
+      // Navigate to the appropriate page
+      navigate(getRoleHome(roles), { replace: true });
+    } catch (error: unknown) {
+      setErrorModal({
+        isOpen: true,
+        message:
+          typeof error === "string"
+            ? error
+            : "Login failed. Please check your credentials.",
+      });
     }
   };
 
-  // const submit = async (e: FormEvent) => {
-  //   // e.preventDefault();
-  //   try {
-  //     //   const r = await doLogin({ email, password }).unwrap();
-  //     //   dispatch(login(r));
-  //     nav("/setup");
-  //   } catch {}
-  // };
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden bg-brand p-12 text-white lg:flex lg:flex-col lg:justify-between">
@@ -73,7 +97,6 @@ const Login = () => {
             <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-brand font-bold text-white">
               RM
             </div>
-            <h1 className="text-3xl font-bold">Welcome back</h1>
             <p className="mt-2 text-slate-500">Sign in to continue.</p>
           </div>
           <div className="space-y-4">
@@ -91,9 +114,7 @@ const Login = () => {
                 />
               </div>
               {errors.userCode && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.userCode.message}
-                </p>
+                <ErrorMessage message={errors.userCode.message} />
               )}
             </label>
             <label className="block text-sm font-medium">
@@ -115,15 +136,15 @@ const Login = () => {
                 />
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
+                <ErrorMessage message={errors.password.message} />
               )}
             </label>
           </div>
-
           {/* Forgot Password */}
-          <div className="flex justify-end">
+          <div className="flex justify-between mt-5">
+            <NavLink to="/signup" className="text-blue-600 text-sm hover:underline">
+              Sign Up
+            </NavLink>
             <a
               href="/forgot-password"
               className="text-blue-600 text-sm hover:underline"
@@ -138,10 +159,16 @@ const Login = () => {
             Sign in
             {/* {doLogin.isLoading ? "Signing in..." : "Sign in"} */}
           </button>
-          <p className="mt-4 text-center text-2xl text-red-400">{loginError}</p>
+          <ErrorModal
+            isOpen={errorModal.isOpen}
+            message={errorModal.message}
+            onClose={() =>
+              setErrorModal({ isOpen: false, message: "" })
+            }
+          />
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

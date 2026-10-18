@@ -95,18 +95,18 @@ export default function Sidebar() {
                     {["Appointments", "Users", "Clients"].includes(
                       String(label),
                     ) && (
-                      <ChevronDown
-                        size={15}
-                        className="ml-auto"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOpen((s) => ({
-                            ...s,
-                            [String(label)]: !s[String(label)],
-                          }));
-                        }}
-                      />
-                    )}
+                        <ChevronDown
+                          size={15}
+                          className="ml-auto"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setOpen((s) => ({
+                              ...s,
+                              [String(label)]: !s[String(label)],
+                            }));
+                          }}
+                        />
+                      )}
                   </NavLink>
                   {open[String(label)] && String(label) === "Appointments" && (
                     <div className="ml-10 mt-1 space-y-1 text text-sm text-slate-400">
@@ -132,7 +132,7 @@ export default function Sidebar() {
         <button
           onClick={() => {
             // dispatch(logout());
-            dispatch(resetSelection());
+            // dispatch(resetSelection());
             nav("/login");
           }}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50"

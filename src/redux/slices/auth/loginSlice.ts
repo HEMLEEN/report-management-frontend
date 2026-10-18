@@ -1,11 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { creatAuthenticate, creatLogin } from "./thunkApi";
 
+export interface AuthUser {
+  id: string;
+  userCode: string;
+
+}
+
 export interface LoginResponse {
   data: {
-    userCode: number;
     accessToken: string;
     refreshToken: string;
+    roles: string[];
+    user: AuthUser;
   };
 }
 export interface LoginState {

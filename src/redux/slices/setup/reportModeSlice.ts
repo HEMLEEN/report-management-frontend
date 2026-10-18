@@ -28,6 +28,8 @@ interface ReportModeState {
   isReportModeLoading: {
     create: boolean;
     list: boolean;
+    isLoading: boolean;
+    isDisabled: boolean;
   };
   message: string;
   reportModeError: string | null;
@@ -38,6 +40,8 @@ const initialState: ReportModeState = {
   isReportModeLoading: {
     create: false,
     list: false,
+    isLoading: false,
+    isDisabled: false,
   },
   message: "",
   reportModeError: null,
