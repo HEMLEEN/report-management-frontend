@@ -22,7 +22,7 @@ interface CompanyResponse {
   data: CompanyItem[];
 }
 
-interface CategoryState {
+interface CompanyState {
   listOfCompanies: CompanyItem[];
   isCompanyLoading: {
     create: boolean;
@@ -32,7 +32,7 @@ interface CategoryState {
   companyError: string | null;
 }
 
-const initialState: CategoryState = {
+const initialState: CompanyState = {
   listOfCompanies: [],
   isCompanyLoading: {
     create: false,

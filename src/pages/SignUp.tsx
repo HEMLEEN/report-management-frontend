@@ -13,11 +13,12 @@ import {
 import { useAppDispatch } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { creatLogin } from "../redux/slices/auth/thunkApi";
+import ErrorMessage from "../components/ErrorMessage";
 
 type SignupFormData = {
     userCode: string;
     password: string;
-    email: string;
+    name: string;
     mobileNo: string;
 };
 
@@ -35,7 +36,7 @@ const SignupForm = () => {
         defaultValues: {
             userCode: "",
             password: "",
-            email: "",
+            name: "",
             mobileNo: "",
         },
         mode: "onTouched",
@@ -130,9 +131,49 @@ const SignupForm = () => {
                         </div>
 
                         {errors.userCode && (
-                            <p className="mt-1.5 text-xs text-red-500">
-                                {errors.userCode.message}
-                            </p>
+                            <ErrorMessage message={errors.userCode.message} />
+                        )}
+                    </div>
+
+                    {/* Name */}
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="mb-2 block text-sm font-medium text-gray-700"
+                        >
+                            User Name
+                        </label>
+
+                        <div className="relative">
+                            <Mail
+                                size={18}
+                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
+
+                            <Controller
+                                name="name"
+                                control={control}
+                                rules={{
+                                    required: "Name is required",
+                                    // pattern: {
+                                    //     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    //     message: "Enter a valid email address",
+                                    // },
+                                }}
+                                render={({ field }) => (
+                                    <input
+                                        {...field}
+                                        id="name"
+                                        type="text"
+                                        placeholder="Enter user name."
+                                        className={inputClass(!!errors.name)}
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        {errors.name && (
+                            <ErrorMessage message={errors.name.message} />
                         )}
                     </div>
 
@@ -187,56 +228,11 @@ const SignupForm = () => {
                         </div>
 
                         {errors.password && (
-                            <p className="mt-1.5 text-xs text-red-500">
-                                {errors.password.message}
-                            </p>
+                            <ErrorMessage message={errors.password.message} />
                         )}
                     </div>
 
-                    {/* Email */}
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="mb-2 block text-sm font-medium text-gray-700"
-                        >
-                            Email Address
-                        </label>
 
-                        <div className="relative">
-                            <Mail
-                                size={18}
-                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                            />
-
-                            <Controller
-                                name="email"
-                                control={control}
-                                // rules={{
-                                //     required: "Email is required",
-                                //     pattern: {
-                                //         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                //         message: "Enter a valid email address",
-                                //     },
-                                // }}
-                                render={({ field }) => (
-                                    <input
-                                        {...field}
-                                        id="email"
-                                        type="email"
-                                        autoComplete="email"
-                                        placeholder="you@example.com"
-                                        className={inputClass(!!errors.email)}
-                                    />
-                                )}
-                            />
-                        </div>
-
-                        {errors.email && (
-                            <p className="mt-1.5 text-xs text-red-500">
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </div>
 
                     {/* Mobile Number */}
                     <div>
@@ -279,9 +275,7 @@ const SignupForm = () => {
                         </div>
 
                         {errors.mobileNo && (
-                            <p className="mt-1.5 text-xs text-red-500">
-                                {errors.mobileNo.message}
-                            </p>
+                            <ErrorMessage message={errors.mobileNo.message} />
                         )}
                     </div>
 

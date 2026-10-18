@@ -8,6 +8,8 @@ import {
   assignCategoryApi,
   listCategoryApi,
   listCompanyApi,
+  listUserApi,
+  approveUserApi,
 } from "./apiCalls";
 
 export const createReportMode = createAsyncThunk(
@@ -121,3 +123,30 @@ export const listCompany = createAsyncThunk(
     }
   },
 );
+
+export const listUser = createAsyncThunk(
+  "form/listUser",
+  async (body: any, thunkAPI) => {
+    try {
+      const response = await listUserApi(body);
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Something went wrong",
+      );
+    }
+  },
+)
+
+export const approveUser = createAsyncThunk(
+  "form/approveUSer",
+  async (body: any, thunkAPI) => {
+    try {
+      const response = await approveUserApi(body);
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Something went wrong",
+      );
+    }
+  })

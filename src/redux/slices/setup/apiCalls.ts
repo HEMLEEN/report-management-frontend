@@ -45,3 +45,13 @@ export const listCompanyApi = async (body: any) => {
   const response = await axiosInstance.post("/company/list", body);
   return response.data;
 };
+
+export const listUserApi = async (body: any) => {
+  const response = await axiosInstance.post("/user/list", body);
+  return response.data;
+};
+
+export const approveUserApi = async (body: any) => {
+  const response = await axiosInstance.patch("/user/status", body);
+  return response.data;
+};

@@ -1,13 +1,15 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { CreationRecord, CreationType } from "./creation.types";
 import { creationLabels } from "./creation.types";
+import { UserStatus } from "../../enum/Enum";
 
 interface CreationListProps {
     type: CreationType;
-    items: CreationRecord[];
+    items: any[];
     onAdd: () => void;
     onEdit: (item: CreationRecord) => void;
     onDelete: (id: string) => void;
+    onApprove?: (item: any) => void;
 }
 
 const CreationList = ({
@@ -16,6 +18,7 @@ const CreationList = ({
     onAdd,
     onEdit,
     onDelete,
+    onApprove,
 }: CreationListProps) => {
     const label = creationLabels[type];
 
@@ -45,8 +48,10 @@ const CreationList = ({
                 <table className="w-full min-w-[480px] text-left text-sm">
                     <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                         <tr>
-                            <th className="px-5 py-4 font-semibold">S.No</th>
+                            <th className="px-5 py-4 font-semibold">{type === "user" ? "User ID" : "S.No"}</th>
                             <th className="px-5 py-4 font-semibold">Name</th>
+                            {type === "user" && <th className="px-5 py-4 font-semibold">Status</th>}
+                            {type === "user" && <th className="px-5 py-4 font-semibold">Allow</th>}
                             <th className="px-5 py-4 text-right font-semibold">
                                 Actions
                             </th>
@@ -61,15 +66,34 @@ const CreationList = ({
                                     className="transition hover:bg-slate-50"
                                 >
                                     <td className="px-5 py-4 text-slate-500">
-                                        {index + 1}
+                                        {type === "user" ? item.userCode : index + 1}
                                     </td>
 
                                     <td className="px-5 py-4 font-medium text-slate-800">
                                         {item.name}
                                     </td>
+                                    {type === "user" && <td className="px-5 py-4 font-medium text-slate-800">
+                                        {item.status == UserStatus.ACTIVE ? "Active" : "Pending"}
+                                    </td>}
+
+                                    {type === "user" && onApprove && (
+                                        <td className="px-5 py-4 font-medium text-slate-800">
+                                            <button
+                                                type="button"
+                                                onClick={() => onApprove(item)}
+                                                className={`flex w-full items-center py-2 text-sm ${item.status === UserStatus.INACTIVE
+                                                    ? "text-green-600 hover:bg-green-50"
+                                                    : "text-yellow-600 hover:bg-yellow-50"
+                                                    }`}                                          >
+                                                {item.status == UserStatus.INACTIVE ? "Set to Approve" : "Deactive"}
+                                            </button>
+
+                                        </td>
+                                    )}
 
                                     <td className="px-5 py-4">
                                         <div className="flex justify-end gap-2">
+
                                             <button
                                                 type="button"
                                                 onClick={() => onEdit(item)}
@@ -85,8 +109,7 @@ const CreationList = ({
                                                 onClick={() => onDelete(item.id)}
                                                 title={`Delete ${item.name}`}
                                                 aria-label={`Delete ${item.name}`}
-                                                className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
-                                            >
+                                                className="rounded-lg p-2 text-red-600 transition hover:bg-red-50">
                                                 <Trash2 size={17} />
                                             </button>
                                         </div>

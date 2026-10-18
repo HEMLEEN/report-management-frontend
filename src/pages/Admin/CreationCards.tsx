@@ -18,13 +18,16 @@ import type {
 } from "./creation.types";
 
 import {
+    approveUser,
     createReportMode,
     listCategory,
     listCompany,
     listReportMode,
+    listUser,
 } from "../../redux/slices/setup/thunkApi";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { UserStatus } from "../../enum/Enum";
 
 interface CreationItem {
     title: string;
@@ -39,6 +42,15 @@ interface ApiRecord {
     _id?: string;
     id?: string;
     name: string;
+}
+
+interface UserApiRecord {
+    _id?: string;
+    id?: string;
+    userCode?: string;
+    name: string;
+    roles: string[],
+    status: string
 }
 
 const creationItems: CreationItem[] = [
@@ -76,10 +88,23 @@ const creationItems: CreationItem[] = [
     },
 ];
 
-const normalizeRecords = (items: ApiRecord[] = []): CreationRecord[] =>
+const normalizeRecords = (
+    items: ApiRecord[] = []
+): CreationRecord[] =>
     items.map((item) => ({
         id: item._id ?? item.id ?? "",
         name: item.name,
+    }));
+
+const normalizeUserRecords = (
+    items: UserApiRecord[] = []
+): any[] =>
+    items.map((item) => ({
+        id: item._id ?? item.id ?? "",
+        userCode: item.userCode,
+        name: item.name,
+        roles: item.roles || [],
+        status: item.status
     }));
 
 const CreationCard = () => {
@@ -111,7 +136,13 @@ const CreationCard = () => {
         companyError,
     } = useAppSelector((state) => state.company);
 
-    // Load only the list belonging to the selected card.
+    const {
+        listOfUsers,
+        isUserLoading,
+        userError,
+    } = useAppSelector((state) => state.user);
+
+    // Fetch the selected list.
     useEffect(() => {
         if (!selectedType) return;
 
@@ -129,12 +160,12 @@ const CreationCard = () => {
                 break;
 
             case "user":
-                // Dispatch your user-list thunk here.
+                void dispatch(listUser({ name: "" }));
                 break;
         }
     }, [dispatch, selectedType]);
 
-    // Derive the displayed list directly from Redux.
+    // Get records from Redux.
     const records: CreationRecord[] = (() => {
         switch (selectedType) {
             case "reportMode":
@@ -153,28 +184,44 @@ const CreationCard = () => {
                 );
 
             case "user":
+                return normalizeUserRecords(
+                    listOfUsers as UserApiRecord[]
+                );
+
             default:
                 return [];
         }
     })();
 
-    const isLoading =
-        selectedType === "reportMode"
-            ? isReportModeLoading.list
-            : selectedType === "category"
-                ? isCategoryLoading.list
-                : selectedType === "company"
-                    ? isCompanyLoading.list
-                    : false;
+    // Get loading status for the selected list.
+    const loadingMap: Record<CreationType, boolean> = {
+        reportMode: isReportModeLoading.list,
+        category: isCategoryLoading.list,
+        company: isCompanyLoading.list,
+        user: isUserLoading.list,
+    };
 
-    const loadError =
-        selectedType === "reportMode"
-            ? reportModeError
-            : selectedType === "category"
-                ? categoryError
-                : selectedType === "company"
-                    ? companyError
-                    : null;
+    const isLoading = selectedType
+        ? loadingMap[selectedType]
+        : false;
+
+    // Get only the selected list's error.
+    const errorMap: Record<CreationType, unknown> = {
+        reportMode: reportModeError,
+        category: categoryError,
+        company: companyError,
+        user: userError,
+    };
+
+    const loadError = selectedType
+        ? errorMap[selectedType]
+        : null;
+
+    const hasLoadError =
+        loadError !== null &&
+        loadError !== undefined &&
+        loadError !== false &&
+        loadError !== "";
 
     const openAddModal = () => {
         setEditingItem(null);
@@ -191,57 +238,87 @@ const CreationCard = () => {
         setEditingItem(null);
     };
 
-    const refreshSelectedList = async (type: CreationType) => {
+    // Refresh the list for the selected type.
+    const refreshSelectedList = async (
+        type: CreationType
+    ) => {
         switch (type) {
             case "reportMode":
-                await dispatch(listReportMode({ name: "" })).unwrap();
+                await dispatch(
+                    listReportMode({ name: "" })
+                ).unwrap();
                 break;
 
             case "category":
-                await dispatch(listCategory({ name: "" })).unwrap();
+                await dispatch(
+                    listCategory({ name: "" })
+                ).unwrap();
                 break;
 
             case "company":
-                await dispatch(listCompany({ name: "" })).unwrap();
+                await dispatch(
+                    listCompany({ name: "" })
+                ).unwrap();
                 break;
 
             case "user":
-                // Dispatch your user-list thunk here.
+                await dispatch(
+                    listUser({ name: "" })
+                ).unwrap();
                 break;
         }
     };
 
-    const handleSave = async (data: CreationFormValues) => {
+    const handleSave = async (
+        data: CreationFormValues
+    ) => {
         const name = data.name.trim();
 
         if (!name || !selectedType) return;
 
         try {
-            if (selectedType === "reportMode") {
-                if (editingItem) {
-                    // Replace with your updateReportMode thunk.
-                    console.warn("Connect the report mode update thunk.");
-                    return;
-                }
+            if (editingItem) {
+                // Connect the appropriate update thunk here.
+                // Update requires the record ID and form values.
+                console.warn(
+                    `Update thunk is not configured for ${selectedType}.`
+                );
+                return;
+            }
 
-                await dispatch(createReportMode({ name })).unwrap();
-            } else if (selectedType === "category") {
-                // Dispatch your createCategory thunk here.
-                console.warn("Connect the category creation thunk.");
-                return;
-            } else if (selectedType === "company") {
-                // Dispatch your createCompany thunk here.
-                console.warn("Connect the company creation thunk.");
-                return;
-            } else {
-                // Dispatch your createUser thunk here.
-                console.warn("Connect the user creation thunk.");
-                return;
+            switch (selectedType) {
+                case "reportMode":
+                    await dispatch(
+                        createReportMode({ name })
+                    ).unwrap();
+                    break;
+
+                case "category":
+                    // TODO: Dispatch your createCategory thunk.
+                    console.warn(
+                        "Connect the createCategory thunk."
+                    );
+                    return;
+
+                case "company":
+                    // TODO: Dispatch your createCompany thunk.
+                    console.warn(
+                        "Connect the createCompany thunk."
+                    );
+                    return;
+
+                case "user":
+                    // TODO: Dispatch your createUser thunk.
+                    // User creation may require additional fields.
+                    console.warn(
+                        "Connect the createUser thunk."
+                    );
+                    return;
             }
 
             await refreshSelectedList(selectedType);
             closeModal();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to save record:", error);
         }
     };
@@ -255,9 +332,32 @@ const CreationCard = () => {
 
         if (!confirmed) return;
 
-        // Dispatch the corresponding delete thunk here.
-        // Do not remove Redux records locally before the API succeeds.
-        console.log("Delete record:", { type: selectedType, id });
+        // TODO: Dispatch the corresponding delete thunk.
+        // Refresh the list only after successful deletion.
+        console.log("Delete record:", {
+            type: selectedType,
+            id,
+        });
+    };
+
+    const handleApprove = async (item: any) => {
+        try {
+            const newStatus =
+                item.status === UserStatus.ACTIVE
+                    ? UserStatus.INACTIVE
+                    : UserStatus.ACTIVE;
+
+            await dispatch(
+                approveUser({
+                    userCode: item.userCode,
+                    status: newStatus,
+                })
+            ).unwrap();
+
+            await refreshSelectedList("user");
+        } catch (error: unknown) {
+            console.error("Failed to update user status:", error);
+        }
     };
 
     return (
@@ -275,13 +375,16 @@ const CreationCard = () => {
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                     {creationItems.map((item) => {
                         const Icon = item.icon;
-                        const isSelected = selectedType === item.type;
+                        const isSelected =
+                            selectedType === item.type;
 
                         return (
                             <button
                                 key={item.type}
                                 type="button"
-                                onClick={() => setSelectedType(item.type)}
+                                onClick={() =>
+                                    setSelectedType(item.type)
+                                }
                                 aria-pressed={isSelected}
                                 className={`group flex min-h-48 w-full flex-col items-start rounded-2xl border bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isSelected
                                     ? "border-blue-500 ring-2 ring-blue-100"
@@ -292,7 +395,10 @@ const CreationCard = () => {
                                     <div
                                         className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.iconBg} ${item.iconColor} transition-transform group-hover:scale-110`}
                                     >
-                                        <Icon size={24} strokeWidth={1.8} />
+                                        <Icon
+                                            size={24}
+                                            strokeWidth={1.8}
+                                        />
                                     </div>
 
                                     <ArrowUpRight
@@ -316,20 +422,25 @@ const CreationCard = () => {
             </section>
 
             {selectedType && (
-                <>
+                <section className="mt-8">
                     {isLoading ? (
-                        <div className="mt-8 rounded-xl border bg-white p-10 text-center text-slate-500">
+                        <div className="rounded-xl border bg-white p-10 text-center text-slate-500">
                             Loading {selectedType} list...
                         </div>
-                    ) : loadError ? (
-                        <div className="mt-8 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+                    ) : hasLoadError ? (
+                        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
                             Failed to load {selectedType} list.
+
                             <button
                                 type="button"
                                 onClick={() => {
-                                    void refreshSelectedList(selectedType).catch(
-                                        (error) =>
-                                            console.error("Retry failed:", error)
+                                    void refreshSelectedList(
+                                        selectedType
+                                    ).catch((error: unknown) =>
+                                        console.error(
+                                            "Retry failed:",
+                                            error
+                                        )
                                     );
                                 }}
                                 className="ml-2 font-semibold underline"
@@ -344,9 +455,10 @@ const CreationCard = () => {
                             onAdd={openAddModal}
                             onEdit={openEditModal}
                             onDelete={handleDelete}
+                            onApprove={handleApprove}
                         />
                     )}
-                </>
+                </section>
             )}
 
             {isModalOpen && selectedType && (

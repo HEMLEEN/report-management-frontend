@@ -7,6 +7,7 @@ export type CreationType =
 export interface CreationRecord {
     id: string;
     name: string;
+    status?: string
 }
 
 export interface CreationFormValues {

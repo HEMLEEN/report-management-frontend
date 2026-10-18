@@ -19,47 +19,23 @@ import CreationCards from "./pages/Admin/CreationCards";
 import Unauthorized from "./middleware/Unauthorized";
 
 import { useAppSelector } from "./redux/hooks";
+import WorkSpace from "./pages/User/WorkSpace";
 
 function AppRoutes() {
-  const login = useAppSelector(
-    (state) => state.auth.login?.data
-  );
-
+  const login = useAppSelector((state) => state.auth.login?.data);
   const token = login?.accessToken;
+  console.log('token', token)
 
   return (
     <Routes>
       {/* Public routes */}
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to={token ? "/dashboard" : "/login"}
-            replace
-          />
-        }
-      />
-
-      <Route
-        path="/login"
-        element={token ? <Navigate to="/dashboard" replace /> : <Login />}
-      />
-
-      <Route
-        path="/signup"
-        element={token ? <Navigate to="/dashboard" replace /> : <SignupForm />}
-      />
-
-      <Route
-        path="/unauthorized"
-        element={
-          token ? <Unauthorized /> : <Navigate to="/login" replace />
-        }
-      />
+      <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
+      <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/signup" element={token ? <Navigate to="/dashboard" replace /> : <SignupForm />} />
+      <Route path="/unauthorized" element={token ? <Unauthorized /> : <Navigate to="/login" replace />} />
 
       {/* Setup: SA and ASC only */}
-      <Route
-        path="/setup"
+      <Route path="/setup"
         element={
           <RoleGuard allowedRoles={["SA", "ASC"]}>
             <CreationCards />
@@ -77,6 +53,13 @@ function AppRoutes() {
       >
         {/* All authenticated users */}
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* User Pages */}
+        <Route path="/workSpace"
+          element={
+            <RoleGuard allowedRoles={["USER"]}>
+              <WorkSpace />
+            </RoleGuard>} />
 
         {/* Admin pages */}
         <Route
@@ -212,7 +195,7 @@ function AppRoutes() {
         path="*"
         element={
           <Navigate
-            to={token ? "/dashboard" : "/login"}
+            to={token ? "/" : "/login"}
             replace
           />
         }

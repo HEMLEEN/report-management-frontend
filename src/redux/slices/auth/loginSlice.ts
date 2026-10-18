@@ -1,10 +1,10 @@
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { creatAuthenticate, creatLogin } from "./thunkApi";
 
 export interface AuthUser {
   id: string;
   userCode: string;
-
 }
 
 export interface LoginResponse {
@@ -15,6 +15,7 @@ export interface LoginResponse {
     user: AuthUser;
   };
 }
+
 export interface LoginState {
   loading: {
     create: boolean;
@@ -24,12 +25,21 @@ export interface LoginState {
   error: string | null;
 }
 
+const getStoredLogin = (): LoginResponse | null => {
+  try {
+    const storedLogin = localStorage.getItem("login");
+    return storedLogin ? JSON.parse(storedLogin) as LoginResponse : null;
+  } catch {
+    return null;
+  }
+};
+
 const initialState: LoginState = {
   loading: {
     create: false,
     authenticate: false,
   },
-  login: null,
+  login: getStoredLogin(),
   error: null,
 };
 
@@ -38,35 +48,39 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     setLoading: (
-      state: { loading: { [x: string]: boolean } },
+      state,
       action: PayloadAction<{
         type: "create" | "authenticate";
         value: boolean;
-      }>,
+      }>
     ) => {
       state.loading[action.payload.type] = action.payload.value;
     },
+
     setLogin: (
-      state: { login: LoginResponse | null },
-      action: PayloadAction<LoginResponse | null>,
+      state,
+      action: PayloadAction<LoginResponse | null>
     ) => {
       state.login = action.payload;
     },
+
     setError: (
-      state: { error: string | null },
-      action: PayloadAction<string | null>,
+      state,
+      action: PayloadAction<string | null>
     ) => {
       state.error = action.payload;
+    },
+
+    logout: (state) => {
+      state.login = null;
     },
   },
 
   extraReducers: (builder) => {
-    // Handle the async thunk actions for getDashboardStats
     builder
-
-      // Create patient stats
       .addCase(creatLogin.pending, (state) => {
         state.loading.create = true;
+        state.error = null;
       })
       .addCase(creatLogin.fulfilled, (state, action) => {
         state.loading.create = false;
@@ -77,9 +91,9 @@ const loginSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // login stats
       .addCase(creatAuthenticate.pending, (state) => {
         state.loading.authenticate = true;
+        state.error = null;
       })
       .addCase(creatAuthenticate.fulfilled, (state, action) => {
         state.loading.authenticate = false;
@@ -91,5 +105,8 @@ const loginSlice = createSlice({
       });
   },
 });
+
+export const { logout, setLogin, setLoading, setError } =
+  loginSlice.actions;
 
 export default loginSlice.reducer;

@@ -46,16 +46,16 @@ const Login = () => {
         return;
       }
 
-      const { accessToken, refreshToken, user } = response.data;
+      const { accessToken, refreshToken, roles } = response.data;
 
       // Store tokens
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
       // Get roles returned by your backend
-      const roles: string[] = user?.roles ?? [];
+      const userRoles: string[] = roles ?? [];
 
-      if (roles.length === 0) {
+      if (userRoles.length === 0) {
         setErrorModal({
           isOpen: true,
           message: "No roles assigned to this user. Contact your administrator.",
@@ -64,7 +64,7 @@ const Login = () => {
       }
 
       // Navigate to the appropriate page
-      navigate(getRoleHome(roles), { replace: true });
+      navigate(getRoleHome(userRoles), { replace: true });
     } catch (error: unknown) {
       setErrorModal({
         isOpen: true,

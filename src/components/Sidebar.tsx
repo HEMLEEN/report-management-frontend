@@ -14,9 +14,10 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { resetSelection } from "../redux/features/selectionSlice";
 import { useState } from "react";
+import { logout } from "../redux/slices/auth/loginSlice";
 const groups = [
   {
     label: "",
@@ -56,12 +57,26 @@ const groups = [
 ];
 export default function Sidebar() {
   const dispatch = useAppDispatch();
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const [open, setOpen] = useState<Record<string, boolean>>({
     Appointments: true,
     Users: true,
     Clients: true,
   });
+
+  const selection = useAppSelector((state) => state.auth);
+
+  const logOut = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+
+    // Clear Redux authentication state
+    dispatch(logout());
+
+    // Redirect to login
+    navigate("/login", { replace: true });
+  }
+
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 overflow-y-auto border-r bg-white lg:block">
       <div className="flex h-20 items-center gap-3 border-b px-6">
@@ -130,11 +145,7 @@ export default function Sidebar() {
           </div>
         ))}
         <button
-          onClick={() => {
-            // dispatch(logout());
-            // dispatch(resetSelection());
-            nav("/login");
-          }}
+          onClick={() => { logOut() }}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50"
         >
           <LogOut size={18} />
