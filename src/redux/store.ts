@@ -4,7 +4,8 @@ import selectionReducer from "./features/selectionSlice";
 import reportModeReducer from "./slices/setup/reportModeSlice";
 import categoryReducer from "./slices/setup/categorySlice";
 import companyReducer from "./slices/setup/companySlice"
-import userReducer from "./slices/setup/userSlice"
+import userReducer from "./slices/user/userSlice"
+import profileReducer from "./slices/user/profileSlice"
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     category: categoryReducer,
     company: companyReducer,
     user: userReducer,
+    profile: profileReducer,
   },
 });
 

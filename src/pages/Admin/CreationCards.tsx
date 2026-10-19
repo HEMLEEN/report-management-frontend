@@ -6,6 +6,7 @@ import {
     Tags,
     Building2,
     ArrowUpRight,
+    LogOut,
 } from "lucide-react";
 
 import CreationList from "./CreationList";
@@ -28,6 +29,8 @@ import {
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { UserStatus } from "../../enum/Enum";
+import { logout } from "../../redux/slices/auth/loginSlice";
+import { useNavigate } from "react-router-dom";
 
 interface CreationItem {
     title: string;
@@ -109,6 +112,7 @@ const normalizeUserRecords = (
 
 const CreationCard = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [selectedType, setSelectedType] =
         useState<CreationType | null>(null);
@@ -360,16 +364,40 @@ const CreationCard = () => {
         }
     };
 
+
+    const logOut = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        // Clear Redux authentication state
+        dispatch(logout());
+
+        // Redirect to login
+        navigate("/login", { replace: true });
+    }
+
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <section className="space-y-6">
-                <div>
-                    <h2 className="text-2xl font-bold tracking-tight text-slate-800">
-                        Admin Setup
-                    </h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                        Create and manage application resources.
-                    </p>
+                <div className="flex justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight text-slate-800">
+                            Admin Setup
+                        </h2>
+                        <p className="mt-1 text-sm text-slate-500">
+                            Create and manage application resources.
+                        </p>
+                    </div>
+
+                    <div>
+                        <button
+                            onClick={() => { logOut() }}
+                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50"
+                        >
+                            <LogOut size={18} />
+                            Logout
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">

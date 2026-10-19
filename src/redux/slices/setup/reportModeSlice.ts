@@ -20,11 +20,15 @@ interface ReportModeResponse {
   status: string;
   code: number;
   message: string;
-  data: ReportModeItem[];
+  data: {
+    reportModeList: ReportModeItem[];
+    totalRecords: number;
+  };
 }
 
 interface ReportModeState {
-  list: ReportModeItem[];
+  listOfReportMode: ReportModeItem[];
+  totalReportRecords: number;
   isReportModeLoading: {
     create: boolean;
     list: boolean;
@@ -36,7 +40,8 @@ interface ReportModeState {
 }
 
 const initialState: ReportModeState = {
-  list: [],
+  listOfReportMode: [],
+  totalReportRecords: 0,
   isReportModeLoading: {
     create: false,
     list: false,
@@ -51,7 +56,7 @@ const reportModeSlice = createSlice({
   name: "reportMode",
   initialState,
   reducers: {
-   
+
   },
 
   extraReducers: (builder) => {
@@ -81,7 +86,9 @@ const reportModeSlice = createSlice({
 
         const response = action.payload as ReportModeResponse;
 
-        state.list = response.data;
+        state.listOfReportMode = response.data.reportModeList;
+        state.totalReportRecords =
+          response.data.totalRecords;
         state.message = response.message;
       })
       .addCase(listReportMode.rejected, (state, action) => {

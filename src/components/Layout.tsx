@@ -1,9 +1,30 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { Menu, Search, Bell } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ProfileDropdown from "./ProfileDropdown";
+import CustomSideBar from "./CustomSideBar";
+
+function getLoggedInUser(): string | null {
+  try {
+    const rawLogin = localStorage.getItem("login");
+    if (!rawLogin) return null;
+    const login = JSON.parse(rawLogin);
+    return login?.data ?? null;
+  } catch {
+    console.error("Unable to read the login data from localStorage.");
+    return null;
+  }
+}
+
 export default function Layout() {
   const [mobile, setMobile] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    setUser(getLoggedInUser());
+  }, []);
+
   const loc = useLocation();
   const title =
     loc.pathname === "/"
@@ -11,7 +32,8 @@ export default function Layout() {
       : loc.pathname.slice(1).replace(/-/g, " ");
   return (
     <div className="min-h-screen">
-      <Sidebar />
+      {/* <Sidebar /> */}
+      <CustomSideBar />
       {mobile && (
         <div
           className="fixed inset-0 z-40 bg-black/40 lg:hidden"
@@ -42,9 +64,7 @@ export default function Layout() {
             <button className="rounded-xl p-2 hover:bg-slate-50">
               <Bell size={19} />
             </button>
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-brand/10 font-semibold text-brand">
-              H
-            </div>
+            <ProfileDropdown user={user} />
           </div>
         </div>
       </header>

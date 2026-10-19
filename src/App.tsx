@@ -20,6 +20,13 @@ import Unauthorized from "./middleware/Unauthorized";
 
 import { useAppSelector } from "./redux/hooks";
 import WorkSpace from "./pages/User/WorkSpace";
+import Setup from "./pages/Admin/Setup";
+import User from "./pages/User/User";
+import ReportMode from "./pages/User/ReportMode";
+import Company from "./pages/User/Company";
+import Category from "./pages/User/Category";
+import AdminLayout from "./components/AdminLayout";
+import Profile from "./redux/slices/user/Profile";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
@@ -38,19 +45,60 @@ function AppRoutes() {
       <Route path="/setup"
         element={
           <RoleGuard allowedRoles={["SA", "ASC"]}>
-            <CreationCards />
+            <Setup />
           </RoleGuard>
         }
       />
+
 
       {/* Authenticated application */}
       <Route
         element={
           <RoleGuard>
-            <Layout />
+            <AdminLayout />
           </RoleGuard>
         }
       >
+        <Route path="/user"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC"]}>
+              <User />
+            </RoleGuard>
+          }
+        />
+
+        <Route path="/profile"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC", "A", "USER"]}>
+              <Profile />
+            </RoleGuard>
+          }
+        />
+
+        <Route path="/reportMode"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC"]}>
+              <ReportMode />
+            </RoleGuard>
+          }
+        />
+
+        <Route path="/category"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC"]}>
+              <Category />
+            </RoleGuard>
+          }
+        />
+
+        <Route path="/company"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC"]}>
+              <Company />
+            </RoleGuard>
+          }
+        />
+
         {/* All authenticated users */}
         <Route path="/dashboard" element={<Dashboard />} />
 

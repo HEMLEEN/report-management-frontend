@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { createSlice } from "@reduxjs/toolkit";
 import { approveUser, listUser } from "./thunkApi";
 
 export interface UserItem {
@@ -15,11 +16,15 @@ interface UserResponse {
   status: string;
   code: number;
   message: string;
-  data: UserItem[];
+  data: {
+    userList: UserItem[];
+    totalRecords: number;
+  };
 }
 
 interface UserState {
   listOfUsers: UserItem[];
+  totalUserRecords: number;
   isUserLoading: {
     create: boolean;
     list: boolean;
@@ -31,10 +36,11 @@ interface UserState {
 
 const initialState: UserState = {
   listOfUsers: [],
+  totalUserRecords: 0,
   isUserLoading: {
     create: false,
     list: false,
-    approve: false
+    approve: false,
   },
   message: "",
   userError: null,
@@ -46,36 +52,48 @@ const userSlice = createSlice({
   reducers: {},
 
   extraReducers: (builder) => {
-    // Handle the async thunk actions for getDashboardStats
     builder
-
-      // List report mode stats
+      // List users
       .addCase(listUser.pending, (state) => {
         state.isUserLoading.list = true;
         state.userError = null;
       })
       .addCase(listUser.fulfilled, (state, action) => {
         state.isUserLoading.list = false;
+
         const response = action.payload as UserResponse;
-        state.listOfUsers = response.data;
+
+        state.listOfUsers = response.data.userList;
+        state.totalUserRecords =
+          response.data.totalRecords;
         state.message = response.message;
       })
       .addCase(listUser.rejected, (state, action) => {
         state.isUserLoading.list = false;
-        state.userError = action.payload as string;
+        state.userError =
+          (action.payload as string) ||
+          action.error.message ||
+          "Failed to load users.";
       })
 
+      // Approve / deactivate user
       .addCase(approveUser.pending, (state) => {
         state.isUserLoading.approve = true;
         state.userError = null;
       })
       .addCase(approveUser.fulfilled, (state, action) => {
         state.isUserLoading.approve = false;
-        state.message = action.payload;
+        state.message =
+          typeof action.payload === "string"
+            ? action.payload
+            : "User status updated successfully.";
       })
       .addCase(approveUser.rejected, (state, action) => {
         state.isUserLoading.approve = false;
-        state.userError = action.payload as string;
+        state.userError =
+          (action.payload as string) ||
+          action.error.message ||
+          "Failed to update user status.";
       });
   },
 });

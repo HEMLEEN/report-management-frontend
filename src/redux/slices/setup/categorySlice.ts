@@ -17,11 +17,15 @@ interface CategoryResponse {
   status: string;
   code: number;
   message: string;
-  data: CategoryItem[];
+  data: {
+    categoryList: CategoryItem[];
+    totalRecords: number;
+  };
 }
 
 interface CategoryState {
   listOfCategories: CategoryItem[];
+  totalRecords: number;
   isCategoryLoading: {
     create: boolean;
     list: boolean;
@@ -32,6 +36,7 @@ interface CategoryState {
 
 const initialState: CategoryState = {
   listOfCategories: [],
+  totalRecords: 0,
   isCategoryLoading: {
     create: false,
     list: false,
@@ -72,7 +77,9 @@ const categorySlice = createSlice({
 
         const response = action.payload as CategoryResponse;
 
-        state.listOfCategories = response.data;
+        state.listOfCategories = response.data.categoryList;
+        state.totalRecords =
+          response.data.totalRecords;
         state.message = response.message;
       })
       .addCase(listCategory.rejected, (state, action) => {

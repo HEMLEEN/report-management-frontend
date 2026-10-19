@@ -5,6 +5,7 @@ import { creatAuthenticate, creatLogin } from "./thunkApi";
 export interface AuthUser {
   id: string;
   userCode: string;
+  name: string;
 }
 
 export interface LoginResponse {

@@ -19,11 +19,15 @@ interface CompanyResponse {
   status: string;
   code: number;
   message: string;
-  data: CompanyItem[];
+  data: {
+    companyList: CompanyItem[];
+    totalRecords: number;
+  };
 }
 
 interface CompanyState {
   listOfCompanies: CompanyItem[];
+  totalRecords: number;
   isCompanyLoading: {
     create: boolean;
     list: boolean;
@@ -34,6 +38,7 @@ interface CompanyState {
 
 const initialState: CompanyState = {
   listOfCompanies: [],
+  totalRecords: 0,
   isCompanyLoading: {
     create: false,
     list: false,
@@ -72,7 +77,9 @@ const companySlice = createSlice({
       .addCase(listCompany.fulfilled, (state, action) => {
         state.isCompanyLoading.list = false;
         const response = action.payload as CompanyResponse;
-        state.listOfCompanies = response.data;
+        state.listOfCompanies = response.data.companyList;
+        state.totalRecords =
+          response.data.totalRecords;
         state.message = response.message;
       })
       .addCase(listCompany.rejected, (state, action) => {
