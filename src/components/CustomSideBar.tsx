@@ -7,6 +7,8 @@ const groups = [
         label: "Setup",
         items: [
             ["/setup", "Admin Management", Settings],
+            ["/workspace", "Worksapce", LayoutDashboard],
+            ["/dashboard", "Dashboard", Settings],
         ],
     },
 ]

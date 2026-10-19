@@ -6,6 +6,7 @@ import categoryReducer from "./slices/setup/categorySlice";
 import companyReducer from "./slices/setup/companySlice"
 import userReducer from "./slices/user/userSlice"
 import profileReducer from "./slices/user/profileSlice"
+import workspaceReducer from "./slices/workspace/workspaceSlice"
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     company: companyReducer,
     user: userReducer,
     profile: profileReducer,
+    workspace: workspaceReducer,
   },
 });
 

@@ -1,6 +1,6 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { Menu, Search, Bell } from "lucide-react";
+import { Menu, Search, Bell, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import ProfileDropdown from "./ProfileDropdown";
 import CustomSideBar from "./CustomSideBar";
@@ -17,7 +17,8 @@ function getLoggedInUser(): string | null {
   }
 }
 
-export default function Layout() {
+export default function UserLayout() {
+  const navigate = useNavigate();
   const [mobile, setMobile] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -28,12 +29,12 @@ export default function Layout() {
   const loc = useLocation();
   const title =
     loc.pathname === "/"
-      ? "Dashboard"
+      ? "Workspace"
       : loc.pathname.slice(1).replace(/-/g, " ");
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       {/* <Sidebar /> */}
-      <CustomSideBar />
+      {/* <Sidebar /> */}
       {mobile && (
         <div
           className="fixed inset-0 z-40 bg-black/40 lg:hidden"
@@ -47,6 +48,13 @@ export default function Layout() {
               <Menu />
             </button>
             <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="mb-3 inline-flex items-center gap-2 text-sm text-gray-500 transition hover:text-brand"
+              >
+                <ArrowLeft size={16} />
+                Back
+              </button>
               <h1 className="text-xl font-bold capitalize">{title}</h1>
               <p className="hidden text-xs text-slate-400 sm:block">
                 Manage your operations from one place
@@ -54,13 +62,6 @@ export default function Layout() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 md:flex">
-              <Search size={16} className="text-slate-400" />
-              <input
-                className="w-36 bg-transparent text-sm outline-none"
-                placeholder="Search..."
-              />
-            </div>
             <button className="rounded-xl p-2 hover:bg-slate-50">
               <Bell size={19} />
             </button>
@@ -70,7 +71,7 @@ export default function Layout() {
       </header>
       {mobile && (
         <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white lg:hidden">
-          <Sidebar />
+          {/* <Sidebar /> */}
         </div>
       )}
       <main className="pt-20 lg:ml-64">

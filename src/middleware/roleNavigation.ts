@@ -1,7 +1,7 @@
 export const ROLE_HOME: Record<string, string> = {
     SA: "/setup",
     ASC: "/setup",
-    ADMIN: "/dashboard",
+    ADMIN: "/workspace",
     HR: "/departments",
     USER: "/workSpace",
 };

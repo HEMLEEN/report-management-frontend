@@ -4,8 +4,8 @@ interface HeaderProps {
     title: string;
     titleDesc: string;
     cardButtonName: string;
-    openAddModal: () => void;
-    onLogout: () => void;
+    openAddModal?: () => void;
+    onLogout?: () => void;
 }
 
 const Header = ({ title, titleDesc, cardButtonName, openAddModal, onLogout }: HeaderProps) => {
@@ -22,23 +22,23 @@ const Header = ({ title, titleDesc, cardButtonName, openAddModal, onLogout }: He
             </div>
 
             <div className="flex flex-wrap gap-3">
-                <button
+                {openAddModal && <button
                     type="button"
                     onClick={openAddModal}
                     className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
                 >
                     <Plus size={18} />
                     {cardButtonName}
-                </button>
+                </button>}
 
-                <button
+                {onLogout && <button
                     type="button"
                     onClick={onLogout}
                     className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
                 >
                     <LogOut size={18} />
                     Logout
-                </button>
+                </button>}
             </div>
         </div>
     )

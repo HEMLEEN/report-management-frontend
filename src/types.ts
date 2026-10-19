@@ -1,6 +1,6 @@
 export type Selection = {
   source: string;
-  point: string;
+  category: string;
   company: string;
   segment: "Residential" | "Commercial";
 };

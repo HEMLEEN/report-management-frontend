@@ -11,8 +11,9 @@ import {
     ArrowLeft,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { profileUser } from "./thunkApi";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { profileUser } from "../../redux/slices/user/thunkApi";
+import { UserStatus } from "../../enum/Enum";
 
 const Profile = () => {
     const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ const Profile = () => {
         });
     };
 
-    const isActive = userDetails?.status === "A";
+    const isActive = userDetails?.status === UserStatus.ACTIVE;
 
     if (isUserLoading.detail && !userDetails) {
         return (

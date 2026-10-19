@@ -15,17 +15,15 @@
 // export default Setup
 
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../redux/hooks";
 import AdminSetup from "./AdminSetup";
+import Header from "./Header";
 
 const Setup = () => {
     const navigate = useNavigate();
 
     return (
         <AdminSetup
-            onCardClick={(card) => {
-                navigate(card.path);
-            }}
+            onCardClick={(card) => navigate(card.path)}
         />
     );
 };

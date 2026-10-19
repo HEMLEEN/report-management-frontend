@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Selection } from "../../types";
 const initial: Selection = {
   source: "",
-  point: "",
+  category: "",
   company: "",
   segment: "Residential",
 };
@@ -12,11 +12,11 @@ const slice = createSlice({
   reducers: {
     setSource: (s, a: PayloadAction<string>) => {
       s.source = a.payload;
-      s.point = "";
+      s.category = "";
       s.company = "";
     },
-    setPoint: (s, a: PayloadAction<string>) => {
-      s.point = a.payload;
+    setCategory: (s, a: PayloadAction<string>) => {
+      s.category = a.payload;
       s.company = "";
     },
     setCompany: (s, a: PayloadAction<string>) => {
@@ -28,6 +28,6 @@ const slice = createSlice({
     resetSelection: () => initial,
   },
 });
-export const { setSource, setPoint, setCompany, setSegment, resetSelection } =
+export const { setSource, setCategory, setCompany, setSegment, resetSelection } =
   slice.actions;
 export default slice.reducer;

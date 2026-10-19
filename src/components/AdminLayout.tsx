@@ -63,7 +63,7 @@ export default function AdminLayout() {
       </header>
       {mobile && (
         <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white lg:hidden">
-          <Sidebar />
+          <CustomSideBar />
         </div>
       )}
       <main className="pt-20 lg:ml-64">
