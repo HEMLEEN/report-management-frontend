@@ -22,6 +22,8 @@ import Profile from "./pages/User/Profile";
 import Dashboard from "./pages/Workspace/Dashboard";
 import UserLayout from "./components/Layout";
 import UserDashboard from "./pages/Workspace/UserDashboard";
+import AdminWorkspace from "./pages/Admin/AdminWorkspace";
+import ReportUI from "./pages/Report/ReportUI";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
@@ -31,9 +33,9 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={<Navigate to={token ? "/workspace" : "/login"} replace />} />
-      <Route path="/login" element={token ? <Navigate to="/workspace" replace /> : <Login />} />
-      <Route path="/signup" element={token ? <Navigate to="/workspace" replace /> : <SignupForm />} />
+      <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
+      <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/signup" element={token ? <Navigate to="/dashboard" replace /> : <SignupForm />} />
       <Route path="/unauthorized" element={token ? <Unauthorized /> : <Navigate to="/login" replace />} />
 
       {/* Setup: SA and ASC only */}
@@ -45,7 +47,6 @@ function AppRoutes() {
         }
       />
 
-
       {/* Authenticated application */}
       <Route
         element={
@@ -54,6 +55,13 @@ function AppRoutes() {
           </RoleGuard>
         }
       >
+        <Route path="/admin/workspace"
+          element={
+            <RoleGuard allowedRoles={["SA", "ASC"]}>
+              <AdminWorkspace />
+            </RoleGuard>
+          }
+        />
         <Route path="/user"
           element={
             <RoleGuard allowedRoles={["SA", "ASC"]}>
@@ -62,13 +70,6 @@ function AppRoutes() {
           }
         />
 
-        {/* <Route path="/profile"
-          element={
-            <RoleGuard allowedRoles={["SA", "ASC", "A", "USER"]}>
-              <Profile />
-            </RoleGuard>
-          }
-        /> */}
 
         <Route path="/reportMode"
           element={
@@ -106,6 +107,11 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
       </Route>
 
+      <Route path="/reportUi"
+        element={
+          <ReportUI />
+        }
+      />
 
       <Route
         path="*"

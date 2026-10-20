@@ -3,7 +3,7 @@ export const ROLE_HOME: Record<string, string> = {
     ASC: "/setup",
     ADMIN: "/workspace",
     HR: "/departments",
-    USER: "/workSpace",
+    USER: "/dashboard",
 };
 
 export const getRoleHome = (roles: string[]): string => {

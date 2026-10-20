@@ -1,4 +1,3 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 import {
     byUserCodeWorkspace,
@@ -55,13 +54,18 @@ interface WorkspaceUserResponse {
     status: string;
     code: number;
     message: string;
-    data: WorkspaceListItem;
+    data: {
+        workspaceList: WorkspaceListItem[];
+        totalRecords: number;
+    };
 }
+
 interface WorkspaceState {
     workspaceDetails: WorspaceItem | null;
     listofWorkspace: WorkspaceListItem[];
     byUserCode: WorkspaceListItem[];
     totalRecords: number;
+    totalUserRecords: number;
     isWorkspaceLoading: {
         create: boolean;
         list: boolean;
@@ -76,10 +80,11 @@ const initialState: WorkspaceState = {
     listofWorkspace: [],
     byUserCode: [],
     totalRecords: 0,
+    totalUserRecords: 0,
     isWorkspaceLoading: {
         create: false,
         list: false,
-        byUserCode: false
+        byUserCode: false,
     },
     message: "",
     workspaceError: null,
@@ -113,7 +118,7 @@ const workspaceSlice = createSlice({
                     "Failed to create workspace.";
             })
 
-            // List all workspaces (SA, ASC, Admin, etc.)
+            // List all workspaces
             .addCase(listWorkspace.pending, (state) => {
                 state.isWorkspaceLoading.list = true;
                 state.workspaceError = null;
@@ -144,13 +149,14 @@ const workspaceSlice = createSlice({
 
             // Workspaces for a specific user
             .addCase(byUserCodeWorkspace.pending, (state) => {
-                state.isWorkspaceLoading.list = true;
+                state.isWorkspaceLoading.byUserCode = true;
                 state.workspaceError = null;
             })
             .addCase(byUserCodeWorkspace.fulfilled, (state, action) => {
                 state.isWorkspaceLoading.byUserCode = false;
 
-                const response = action.payload as WorkspaceListResponse;
+                const response =
+                    action.payload as WorkspaceUserResponse;
 
                 state.byUserCode = Array.isArray(
                     response?.data?.workspaceList,
@@ -158,13 +164,13 @@ const workspaceSlice = createSlice({
                     ? response.data.workspaceList
                     : [];
 
-                state.totalRecords =
+                state.totalUserRecords =
                     response?.data?.totalRecords ?? 0;
 
                 state.message = response?.message ?? "";
             })
             .addCase(byUserCodeWorkspace.rejected, (state, action) => {
-                state.isWorkspaceLoading.list = false;
+                state.isWorkspaceLoading.byUserCode = false;
                 state.workspaceError =
                     (action.payload as string) ||
                     action.error.message ||

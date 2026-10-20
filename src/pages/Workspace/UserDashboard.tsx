@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../redux/store";
 import {
+    AlertCircle,
     Building2,
     CalendarDays,
     FileText,
     Layers3,
+    Plus,
     RefreshCw,
     Users,
-    AlertCircle,
 } from "lucide-react";
 import { byUserCodeWorkspace } from "../../redux/slices/workspace/thunkApi";
 
@@ -17,26 +19,57 @@ interface LoggedInUser {
     name?: string;
 }
 
-interface LoginData {
-    userCode?: string;
-}
-
 function getLoggedInUser(): LoggedInUser | null {
     try {
         const rawLogin = localStorage.getItem("login");
 
         if (!rawLogin) return null;
 
-        const login = JSON.parse(rawLogin);
+        const login: unknown = JSON.parse(rawLogin);
 
-        // Adjust this path to match the actual login response.
-        const user = login?.data;
+        if (!login || typeof login !== "object") return null;
 
-        if (!user || typeof user.userCode !== "string") {
+        const data = login as Record<string, unknown>;
+
+        // Supports common login response structures.
+        const nestedData = data.data;
+        const nestedUser = data.user;
+
+        const responseData =
+            nestedData && typeof nestedData === "object"
+                ? (nestedData as Record<string, unknown>)
+                : {};
+
+        const responseUser =
+            nestedUser && typeof nestedUser === "object"
+                ? (nestedUser as Record<string, unknown>)
+                : {};
+
+        const dataUser =
+            responseData.user && typeof responseData.user === "object"
+                ? (responseData.user as Record<string, unknown>)
+                : {};
+
+        const userCode =
+            responseUser.userCode ??
+            responseData.userCode ??
+            dataUser.userCode ??
+            data.userCode;
+
+        const name =
+            responseUser.name ??
+            responseData.name ??
+            dataUser.name ??
+            data.name;
+
+        if (typeof userCode !== "string" || !userCode.trim()) {
             return null;
         }
 
-        return user as LoggedInUser;
+        return {
+            userCode: userCode.trim(),
+            ...(typeof name === "string" ? { name } : {}),
+        };
     } catch (error) {
         console.error("Unable to read login data:", error);
         return null;
@@ -45,6 +78,8 @@ function getLoggedInUser(): LoggedInUser | null {
 
 const UserDashboard = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+
     const [user, setUser] = useState<LoggedInUser | null>(null);
     const [userInitialized, setUserInitialized] = useState(false);
 
@@ -89,21 +124,37 @@ const UserDashboard = () => {
         });
     };
 
-    const isLoading = !userInitialized || isWorkspaceLoading.byUserCode;
+    // Use the loading flag for this specific API request.
+    const isLoading =
+        !userInitialized || isWorkspaceLoading.byUserCode;
+
+    const workspaceCount = Array.isArray(byUserCode)
+        ? byUserCode.length
+        : 0;
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-            {/* Header */}
-            <div className="mb-8 flex flex-col justify-end gap-4 sm:flex-row sm:items-center">
-                {/* <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
-                        User Dashboard
-                    </h1>
-                    <p className="mt-1 text-sm text-slate-500">
-                        View and manage your workspaces.
-                    </p>
-                </div> */}
+            {/* Header actions */}
+            <div className="mb-8 flex flex-col justify-end gap-3 sm:flex-row sm:items-center">
 
+                {workspaceCount > 0 && (<button
+                    type="button"
+                    onClick={() => navigate("/workspace")}
+                    disabled={!userInitialized || !user?.userCode}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    <Plus size={16} />
+                    Add New Workspace
+                </button>)}
+                {workspaceCount > 0 && (<button
+                    type="button"
+                    onClick={() => navigate("/reportUi")}
+                    disabled={!userInitialized || !user?.userCode}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    <Plus size={16} />
+                    Report UI
+                </button>)}
                 <button
                     type="button"
                     onClick={fetchWorkspace}
@@ -127,9 +178,10 @@ const UserDashboard = () => {
                                 Total Workspaces
                             </p>
                             <h2 className="mt-2 text-3xl font-bold text-slate-800">
-                                {byUserCode ? 1 : 0}
+                                {isLoading ? "—" : workspaceCount}
                             </h2>
                         </div>
+
                         <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600">
                             <Layers3 size={25} />
                         </div>
@@ -143,9 +195,10 @@ const UserDashboard = () => {
                                 Loaded Workspaces
                             </p>
                             <h2 className="mt-2 text-3xl font-bold text-slate-800">
-                                {byUserCode ? 1 : 0}
+                                {isLoading ? "—" : workspaceCount}
                             </h2>
                         </div>
+
                         <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600">
                             <FileText size={25} />
                         </div>
@@ -163,7 +216,7 @@ const UserDashboard = () => {
                 </p>
             </div>
 
-            {/* Loading */}
+            {/* Loading skeleton */}
             {isLoading && (
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     {Array.from({ length: 6 }).map((_, index) => (
@@ -186,30 +239,49 @@ const UserDashboard = () => {
                 </div>
             )}
 
-            {/* Error */}
-            {!isLoading && workspaceError && (
-                <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-5 text-red-700">
-                    <AlertCircle size={22} className="mt-0.5 shrink-0" />
-                    <div>
-                        <h3 className="font-semibold">
-                            Failed to load workspaces
-                        </h3>
-                        <p className="mt-1 text-sm">{workspaceError}</p>
-                        <button
-                            type="button"
-                            onClick={fetchWorkspace}
-                            className="mt-3 text-sm font-semibold underline"
-                        >
-                            Try again
-                        </button>
-                    </div>
+            {/* Missing login */}
+            {userInitialized && !user?.userCode && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
+                    Unable to identify the logged-in user. Please log in
+                    again.
                 </div>
             )}
 
+            {/* API error */}
+            {!isLoading &&
+                user?.userCode &&
+                workspaceError && (
+                    <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-5 text-red-700">
+                        <AlertCircle
+                            size={22}
+                            className="mt-0.5 shrink-0"
+                        />
+
+                        <div>
+                            <h3 className="font-semibold">
+                                Failed to load workspaces
+                            </h3>
+
+                            <p className="mt-1 text-sm">
+                                {workspaceError}
+                            </p>
+
+                            <button
+                                type="button"
+                                onClick={fetchWorkspace}
+                                className="mt-3 text-sm font-semibold underline"
+                            >
+                                Try again
+                            </button>
+                        </div>
+                    </div>
+                )}
+
             {/* Workspace cards */}
-            {!isWorkspaceLoading.list &&
+            {!isLoading &&
+                user?.userCode &&
                 !workspaceError &&
-                byUserCode.length > 0 && (
+                workspaceCount > 0 && (
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                         {byUserCode.map((workspace) => (
                             <article
@@ -228,6 +300,7 @@ const UserDashboard = () => {
                                                 {workspace.reportMode?.name ??
                                                     "Unnamed Report Mode"}
                                             </h3>
+
                                             <p className="mt-1 text-sm text-slate-500">
                                                 {workspace.company?.name ??
                                                     "No company"}
@@ -241,11 +314,12 @@ const UserDashboard = () => {
                                 </div>
 
                                 {/* Card details */}
-                                <div className="space-y-4 p-5">
+                                <div className="space-y-4 p-5" >
                                     <div className="flex items-center gap-3">
                                         <div className="rounded-lg bg-slate-100 p-2 text-slate-500">
                                             <FileText size={17} />
                                         </div>
+
                                         <div className="min-w-0 flex-1">
                                             <p className="text-xs text-slate-400">
                                                 Category
@@ -261,13 +335,13 @@ const UserDashboard = () => {
                                         <div className="rounded-lg bg-slate-100 p-2 text-slate-500">
                                             <Layers3 size={17} />
                                         </div>
+
                                         <div className="min-w-0 flex-1">
                                             <p className="text-xs text-slate-400">
                                                 Segment
                                             </p>
                                             <p className="text-sm font-semibold text-slate-700">
-                                                {workspace.segment ??
-                                                    "N/A"}
+                                                {workspace.segment ?? "N/A"}
                                             </p>
                                         </div>
                                     </div>
@@ -276,6 +350,7 @@ const UserDashboard = () => {
                                         <div className="rounded-lg bg-slate-100 p-2 text-slate-500">
                                             <Users size={17} />
                                         </div>
+
                                         <div className="min-w-0 flex-1">
                                             <p className="text-xs text-slate-400">
                                                 Created By
@@ -283,7 +358,8 @@ const UserDashboard = () => {
                                             <p className="truncate text-sm font-semibold text-slate-700">
                                                 {workspace.user?.name ??
                                                     workspace.user?.userCode ??
-                                                    "N/A"}
+                                                    user.name ??
+                                                    user.userCode}
                                             </p>
                                         </div>
                                     </div>
@@ -295,6 +371,7 @@ const UserDashboard = () => {
                                         size={15}
                                         className="text-slate-400"
                                     />
+
                                     <span className="text-xs text-slate-500">
                                         Created{" "}
                                         {formatDate(workspace.createdAt)}
@@ -306,9 +383,10 @@ const UserDashboard = () => {
                 )}
 
             {/* Empty state */}
-            {!isWorkspaceLoading.list &&
+            {!isLoading &&
+                user?.userCode &&
                 !workspaceError &&
-                byUserCode.length === 0 && (
+                workspaceCount === 0 && (
                     <div className="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
                         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
                             <Layers3 size={28} />
@@ -317,18 +395,21 @@ const UserDashboard = () => {
                         <h3 className="text-lg font-semibold text-slate-800">
                             No workspaces found
                         </h3>
+
                         <p className="mt-2 text-sm text-slate-500">
                             Create a workspace to see it here.
                         </p>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate("/workspace")}
+                            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-500"
+                        >
+                            <Plus size={16} />
+                            Create Workspace
+                        </button>
                     </div>
                 )}
-
-            {/* Missing login */}
-            {userInitialized && !user?.userCode && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
-                    Unable to identify the logged-in user. Please log in again.
-                </div>
-            )}
         </div>
     );
 };

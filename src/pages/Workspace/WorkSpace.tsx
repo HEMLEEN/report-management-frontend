@@ -300,7 +300,6 @@ const WorkSpace = () => {
         };
 
         dispatch(createWorkspace(workspaceData));
-        console.log('workspaceData', workspaceData)
         navigate("/dashboard")
     };
 

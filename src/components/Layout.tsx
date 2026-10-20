@@ -29,32 +29,23 @@ export default function UserLayout() {
   const loc = useLocation();
   const title =
     loc.pathname === "/"
-      ? "Workspace"
+      ? "User Dashboard"
       : loc.pathname.slice(1).replace(/-/g, " ");
   return (
     <div className="min-h-screen ">
-      {/* <Sidebar /> */}
-      {/* <Sidebar /> */}
       {mobile && (
         <div
           className="fixed inset-0 z-40 bg-black/40 lg:hidden"
           onClick={() => setMobile(false)}
         />
       )}
-      <header className="fixed left-0 right-0 top-0 z-20 h-20 border-b bg-white/95 backdrop-blur lg:left-64">
+      <header className="fixed left-0 right-0 top-0 z-20 h-20 border-b bg-white/95 backdrop-blur lg:left-20">
         <div className="flex h-full items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button className="lg:hidden" onClick={() => setMobile((v) => !v)}>
               <Menu />
             </button>
             <div>
-              <button
-                onClick={() => navigate(-1)}
-                className="mb-3 inline-flex items-center gap-2 text-sm text-gray-500 transition hover:text-brand"
-              >
-                <ArrowLeft size={16} />
-                Back
-              </button>
               <h1 className="text-xl font-bold capitalize">{title}</h1>
               <p className="hidden text-xs text-slate-400 sm:block">
                 Manage your operations from one place

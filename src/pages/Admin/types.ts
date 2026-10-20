@@ -80,7 +80,7 @@ export const defaultCards: AdminCard[] = [
         type: "workspace",
         iconColor: "text-orange-600",
         iconBg: "bg-orange-100",
-        path: "/workspace",
+        path: "/admin/workspace",
     },
     {
         id: "dashboard",
