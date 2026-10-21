@@ -26,6 +26,8 @@ import {
     ArrowDown,
     Download,
 } from "lucide-react";
+import { generateComponentCode } from "./helper";
+import { useNavigate } from "react-router-dom";
 
 type ComponentType =
     | "heading"
@@ -43,7 +45,7 @@ type ComponentType =
     | "image"
     | "divider";
 
-interface ReportComponent {
+export interface ReportComponent {
     id: string;
     type: ComponentType;
     label: string;
@@ -114,6 +116,7 @@ const initialComponents = [
 ];
 
 export default function ReportUI() {
+    const naviagte = useNavigate()
     const [section, setSection] = useState<"form" | "all">("form");
     const [search, setSearch] = useState("");
     const [items, setItems] = useState<ReportComponent[]>(initialComponents);
@@ -165,18 +168,153 @@ export default function ReportUI() {
         });
     };
 
+    // const exportLayout = () => {
+    //     const blob = new Blob(
+    //         [JSON.stringify({ name: reportName, components: items }, null, 2)],
+    //         { type: "application/json" },
+    //     );
+
+    //     const url = URL.createObjectURL(blob);
+    //     const anchor = document.createElement("a");
+    //     anchor.href = url;
+    //     anchor.download = "report-layout.json";
+    //     anchor.click();
+    //     URL.revokeObjectURL(url);
+    // };
+
+
     const exportLayout = () => {
-        const blob = new Blob(
-            [JSON.stringify({ name: reportName, components: items }, null, 2)],
-            { type: "application/json" },
+        const reportComponents = items
+            .map(generateComponentCode)
+            .join("\n");
+
+        const sourceTemplate = `import type { FC } from "react";
+
+interface ReportProps {}
+
+const reportTitle = ${JSON.stringify(reportName)};
+
+    const PreviewUIComponent = () => {
+        return (
+            <main className="min-h-screen bg-slate-100 p-4 sm:p-8">
+                <div className="mx-auto max-w-5xl rounded-2xl bg-white p-5 shadow-sm sm:p-8">
+                    <header className="mb-6 border-b pb-4">
+                        <h1 className="text-2xl font-bold text-slate-900">
+                            {reportTitle}
+                        </h1>
+                    </header>
+
+                    <div className="space-y-5">
+                        ${reportComponents}
+                    </div>
+                </div>
+            </main>
         );
+    };
+export default PreviewUIComponent;
+`;
+
+        const safeName =
+            reportName
+                .replace(/[^a-zA-Z0-9 ]/g, "")
+                .trim()
+                .split(/\s+/)
+                .map((word) =>
+                    word.charAt(0).toUpperCase() + word.slice(1),
+                )
+                .join("") || "SampleReport";
+
+        // Keep the component name consistent with the filename.
+        const source = sourceTemplate.replace(
+            "SaleReport",
+            safeName,
+        );
+
+        const blob = new Blob([source], {
+            type: "text/plain;charset=utf-8",
+        });
 
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement("a");
+
         anchor.href = url;
-        anchor.download = "report-layout.json";
+        anchor.download = `${safeName}.tsx`;
+        document.body.appendChild(anchor);
         anchor.click();
-        URL.revokeObjectURL(url);
+        anchor.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+
+    const importLayout = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const file = event.target.files?.[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            try {
+                const parsed: unknown = JSON.parse(
+                    String(reader.result),
+                );
+
+                if (
+                    typeof parsed !== "object" ||
+                    parsed === null ||
+                    !("name" in parsed) ||
+                    !("components" in parsed) ||
+                    typeof parsed.name !== "string" ||
+                    !Array.isArray(parsed.components)
+                ) {
+                    throw new Error("Invalid report layout.");
+                }
+
+                const validTypes = new Set(
+                    componentLibrary.map((item) => item.type),
+                );
+
+                const validComponents = parsed.components.every(
+                    (component: unknown) => {
+                        if (
+                            typeof component !== "object" ||
+                            component === null
+                        ) {
+                            return false;
+                        }
+
+                        const value = component as Record<string, unknown>;
+
+                        return (
+                            typeof value.id === "string" &&
+                            typeof value.type === "string" &&
+                            validTypes.has(value.type as ComponentType) &&
+                            typeof value.label === "string"
+                        );
+                    },
+                );
+
+                if (!validComponents) {
+                    throw new Error("The file contains invalid components.");
+                }
+
+                setReportName(parsed.name);
+                setItems(parsed.components as ReportComponent[]);
+                setSelectedId(parsed.components[0]?.id ?? null);
+                setPreview(false);
+            } catch {
+                window.alert(
+                    "Unable to import this file. Please select a valid report layout JSON.",
+                );
+            } finally {
+                event.target.value = "";
+            }
+        };
+
+        reader.readAsText(file);
     };
 
     const renderItem = (item: ReportComponent) => {
@@ -248,8 +386,8 @@ export default function ReportUI() {
                     <button
                         type="button"
                         className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${item.variant === "secondary"
-                                ? "border border-slate-200 bg-white text-slate-700"
-                                : "bg-indigo-600 text-white"
+                            ? "border border-slate-200 bg-white text-slate-700"
+                            : "bg-indigo-600 text-white"
                             }`}
                     >
                         {item.label}
@@ -361,6 +499,24 @@ export default function ReportUI() {
                             <Download size={16} />
                             Export
                         </button>
+                        <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                            <input
+                                type="file"
+                                accept=".json,application/json"
+                                className="hidden"
+                                onChange={importLayout}
+                            />
+                            <FileText size={16} />
+                            Import JSON
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => naviagte('/preview/layout')}
+                            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                        >
+                            <Download size={16} />
+                            Preview Layout
+                        </button>
                     </div>
                 </div>
             </header>
@@ -467,10 +623,10 @@ export default function ReportUI() {
                                         key={item.id}
                                         onClick={() => !preview && setSelectedId(item.id)}
                                         className={`group relative rounded-xl bg-white transition ${!preview && selectedId === item.id
-                                                ? "ring-2 ring-indigo-500 ring-offset-1"
-                                                : !preview
-                                                    ? "hover:ring-1 hover:ring-slate-300"
-                                                    : ""
+                                            ? "ring-2 ring-indigo-500 ring-offset-1"
+                                            : !preview
+                                                ? "hover:ring-1 hover:ring-slate-300"
+                                                : ""
                                             }`}
                                     >
                                         {!preview && (
@@ -627,8 +783,8 @@ export default function ReportUI() {
                                                     type="button"
                                                     onClick={() => updateItem({ variant })}
                                                     className={`rounded-xl border px-3 py-2 text-xs font-semibold capitalize ${(selected.variant || "primary") === variant
-                                                            ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                                                            : "text-slate-500"
+                                                        ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                                                        : "text-slate-500"
                                                         }`}
                                                 >
                                                     {variant}

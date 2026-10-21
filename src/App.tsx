@@ -24,6 +24,7 @@ import UserLayout from "./components/Layout";
 import UserDashboard from "./pages/Workspace/UserDashboard";
 import AdminWorkspace from "./pages/Admin/AdminWorkspace";
 import ReportUI from "./pages/Report/ReportUI";
+import PreviewUIComponent from "./pages/Report/Preview";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
@@ -105,6 +106,7 @@ function AppRoutes() {
         <Route path="/workspace" element={<WorkSpace />} />
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="//preview/layout" element={<PreviewUIComponent />} />
       </Route>
 
       <Route path="/reportUi"
