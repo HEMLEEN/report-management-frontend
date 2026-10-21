@@ -28,6 +28,10 @@ export default function RMLoader({
                 />
             </div>
 
+            <p className="mt-2 text-sm text-slate-500">
+                <div className="text text-lg font-bold text-blue-800">Developed by Hemleen </div>
+            </p>
+
             <h1 className="mt-3 text-2xl font-bold text-slate-800">
                 Report Management
             </h1>
@@ -39,6 +43,7 @@ export default function RMLoader({
             <div className="mt-5 h-1.5 w-48 overflow-hidden rounded-full bg-slate-200">
                 <div className="h-full w-1/2 animate-[loading_1s_ease-in-out_infinite] rounded-full bg-blue-600" />
             </div>
+
 
             <style>{`
         @keyframes loading {

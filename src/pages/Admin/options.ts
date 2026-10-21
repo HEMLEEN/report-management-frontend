@@ -1,4 +1,4 @@
-import { LucideIcon, UserRoundPlus, FilePlus2, Tags, Building2, BriefcaseBusiness, FileText, Folder, Settings } from "lucide-react";
+import { LucideIcon, UserRoundPlus, FilePlus2, Tags, Building2, BriefcaseBusiness, FileText, Folder, Settings, Home } from "lucide-react";
 import { SelectOption, FormValues } from "./types";
 
 export const iconMap: Record<string, LucideIcon> = {
@@ -10,6 +10,7 @@ export const iconMap: Record<string, LucideIcon> = {
     FileText,
     Folder,
     Settings,
+    Home
 };
 
 export const iconOptions: SelectOption[] = Object.keys(iconMap).map((icon) => ({

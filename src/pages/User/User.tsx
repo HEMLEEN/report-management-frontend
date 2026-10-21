@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2, Search, X } from "lucide-react";
+import { Pencil, Plus, Trash2, Search, X, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { HiUserGroup } from "react-icons/hi";
 
@@ -210,7 +210,6 @@ const User = () => {
         data: AssignRoleFormData
     ) => {
         if (!selectedUser) return;
-        console.log('data', data)
 
         try {
             await dispatch(
@@ -219,9 +218,6 @@ const User = () => {
                     roles: data.roles,
                 })
             ).unwrap();
-
-            console.log("User:", selectedUser.userCode);
-            console.log("Assigned roles:", data.roles);
 
             // Refresh after the role-assignment API succeeds.
             await refresh();
@@ -250,14 +246,26 @@ const User = () => {
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={openAddModal}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-                    >
-                        <Plus size={18} />
-                        Add User
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            type="button"
+                            onClick={refresh}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700"
+                        >
+                            <RefreshCw size={18} />
+
+                            Refresh
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={openAddModal}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                        >
+                            <RefreshCw size={18} />
+                            <Plus size={18} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Search */}

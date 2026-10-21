@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     User,
@@ -14,6 +14,7 @@ import { useAppDispatch } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { creatLogin } from "../redux/slices/auth/thunkApi";
 import ErrorMessage from "../components/ErrorMessage";
+import SuccessModal from "../components/SuccessModal";
 
 type SignupFormData = {
     userCode: string;
@@ -25,6 +26,7 @@ type SignupFormData = {
 const SignupForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
     const [loginError, setLoginError] = useState("");
     const {
@@ -45,21 +47,44 @@ const SignupForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (navigationTimer.current) {
+                clearTimeout(navigationTimer.current);
+            }
+        };
+    }, []);
+
     const onSubmit = async (data: any) => {
         setLoginError("");
+        setSuccessMessage("");
+
         try {
             const response = await dispatch(creatLogin(data)).unwrap();
 
-            if (response.status == "success") {
-                navigate("/login");
+            if (response.status === "success") {
+                setSuccessMessage(
+                    response.message || "Account created successfully!"
+                );
+                setIsSuccessOpen(true);
+
+                // Navigate to login after 2 seconds
+                navigationTimer.current = setTimeout(() => {
+                    setIsSuccessOpen(false);
+                    navigate("/login", { replace: true });
+                }, 4000);
             }
-            // Navigate only after successful login
         } catch (error) {
             setLoginError(
-                typeof error === "string" ? error : "Invalid user ID or password",
+                typeof error === "string"
+                    ? error
+                    : "Unable to create account. Please try again."
             );
         }
     };
+
 
     const inputClass = (hasError: boolean) =>
         `w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm
@@ -235,7 +260,7 @@ const SignupForm = () => {
 
 
                     {/* Mobile Number */}
-                    <div>
+                    {/* <div>
                         <label
                             htmlFor="mobileNo"
                             className="mb-2 block text-sm font-medium text-gray-700"
@@ -277,7 +302,7 @@ const SignupForm = () => {
                         {errors.mobileNo && (
                             <ErrorMessage message={errors.mobileNo.message} />
                         )}
-                    </div>
+                    </div> */}
 
                     {/* Success Message */}
                     {successMessage && (
@@ -302,6 +327,18 @@ const SignupForm = () => {
                     <p className="mt-4 text-center text-2xl text-red-400">{loginError}</p>
                 </form>
             </div>
+            <SuccessModal
+                isOpen={isSuccessOpen}
+                message={successMessage}
+                onClose={() => {
+                    if (navigationTimer.current) {
+                        clearTimeout(navigationTimer.current);
+                    }
+
+                    setIsSuccessOpen(false);
+                    navigate("/login", { replace: true });
+                }}
+            />
         </div>
     );
 };

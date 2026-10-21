@@ -8,6 +8,7 @@ import { creatAuthenticate } from "../redux/slices/auth/thunkApi";
 import ErrorMessage from "../components/ErrorMessage";
 import ErrorModal from "../components/ErrorModal";
 import { getRoleHome } from "../middleware/roleNavigation";
+import moment from "moment";
 
 type LoginForm = {
   userCode: string;
@@ -89,7 +90,7 @@ const Login = () => {
             one workspace.
           </p>
         </div>
-        <p className="text-sm text-white/60">© 2026 Report Management</p>
+        <p className="text-sm text-white/60">© {moment().year()} Report Management</p>
       </div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">

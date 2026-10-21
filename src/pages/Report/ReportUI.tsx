@@ -188,47 +188,25 @@ export default function ReportUI() {
             .map(generateComponentCode)
             .join("\n");
 
-        const sourceTemplate = `import type { FC } from "react";
+        const safeReportName = JSON.stringify(reportName);
 
-interface ReportProps {}
+        const source = `import type { FC } from "react";
 
-const reportTitle = ${JSON.stringify(reportName)};
+const Preview = () => {
+    return (
+        <main className="min-h-screen bg-slate-100 p-6">
+            <div className="mx-auto max-w-5xl space-y-5 rounded-2xl bg-white p-8">
+                <h1 className="text-2xl font-bold">
+                    {${safeReportName}}
+                </h1>
+                ${reportComponents}
+            </div>
+        </main>
+    );
+};
 
-    const PreviewUIComponent = () => {
-        return (
-            <main className="min-h-screen bg-slate-100 p-4 sm:p-8">
-                <div className="mx-auto max-w-5xl rounded-2xl bg-white p-5 shadow-sm sm:p-8">
-                    <header className="mb-6 border-b pb-4">
-                        <h1 className="text-2xl font-bold text-slate-900">
-                            {reportTitle}
-                        </h1>
-                    </header>
-
-                    <div className="space-y-5">
-                        ${reportComponents}
-                    </div>
-                </div>
-            </main>
-        );
-    };
-export default PreviewUIComponent;
+export default Preview;
 `;
-
-        const safeName =
-            reportName
-                .replace(/[^a-zA-Z0-9 ]/g, "")
-                .trim()
-                .split(/\s+/)
-                .map((word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1),
-                )
-                .join("") || "SampleReport";
-
-        // Keep the component name consistent with the filename.
-        const source = sourceTemplate.replace(
-            "SaleReport",
-            safeName,
-        );
 
         const blob = new Blob([source], {
             type: "text/plain;charset=utf-8",
@@ -238,10 +216,8 @@ export default PreviewUIComponent;
         const anchor = document.createElement("a");
 
         anchor.href = url;
-        anchor.download = `${safeName}.tsx`;
-        document.body.appendChild(anchor);
+        anchor.download = "Preview.tsx";
         anchor.click();
-        anchor.remove();
 
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     };

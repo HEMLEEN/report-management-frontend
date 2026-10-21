@@ -34,7 +34,7 @@ export const LOGIN_KEY = "login";
 export const defaultCards: AdminCard[] = [
     {
         id: "user",
-        title: "User",
+        title: "Users",
         description: "Register and manage users.",
         icon: "UserRoundPlus",
         type: "user",
@@ -76,7 +76,7 @@ export const defaultCards: AdminCard[] = [
         id: "workspace",
         title: "WorkSpace",
         description: "Manage you workspace.",
-        icon: "Building2",
+        icon: "Settings",
         type: "workspace",
         iconColor: "text-orange-600",
         iconBg: "bg-orange-100",
@@ -86,7 +86,7 @@ export const defaultCards: AdminCard[] = [
         id: "dashboard",
         title: "Dashboard",
         description: "Mange your Dashboard.",
-        icon: "Building2",
+        icon: "Warehouse",
         type: "dashboard",
         iconColor: "text-orange-600",
         iconBg: "bg-orange-100",

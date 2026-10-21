@@ -146,7 +146,7 @@ const UserDashboard = () => {
                     <Plus size={16} />
                     Add New Workspace
                 </button>)}
-                {workspaceCount > 0 && (<button
+                {/* {workspaceCount > 0 && (<button
                     type="button"
                     onClick={() => navigate("/reportUi")}
                     disabled={!userInitialized || !user?.userCode}
@@ -154,7 +154,7 @@ const UserDashboard = () => {
                 >
                     <Plus size={16} />
                     Report UI
-                </button>)}
+                </button>)} */}
                 <button
                     type="button"
                     onClick={fetchWorkspace}
@@ -287,6 +287,15 @@ const UserDashboard = () => {
                             <article
                                 key={workspace._id}
                                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
+                                onClick={() => navigate("/report/builder", {
+                                    state: {
+                                        builder: workspace,
+                                        reportName: workspace.reportMode.name,
+                                        category: workspace.category.name,
+                                        company: workspace.company.name,
+                                        segment: workspace.segment
+                                    }
+                                })}
                             >
                                 {/* Card header */}
                                 <div className="border-b border-slate-100 p-5">

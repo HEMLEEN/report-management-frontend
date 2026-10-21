@@ -25,11 +25,11 @@ import UserDashboard from "./pages/Workspace/UserDashboard";
 import AdminWorkspace from "./pages/Admin/AdminWorkspace";
 import ReportUI from "./pages/Report/ReportUI";
 import PreviewUIComponent from "./pages/Report/Preview";
+import ReportBuilder from "./pages/Report/ReportBuilder";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
   const token = login?.accessToken;
-  console.log('token', token)
 
   return (
     <Routes>
@@ -106,7 +106,8 @@ function AppRoutes() {
         <Route path="/workspace" element={<WorkSpace />} />
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="//preview/layout" element={<PreviewUIComponent />} />
+        <Route path="/preview/layout" element={<PreviewUIComponent />} />
+        <Route path="/report/builder" element={<ReportBuilder />} />
       </Route>
 
       <Route path="/reportUi"
