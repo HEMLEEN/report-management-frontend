@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { approveUserApi, listUserApi, userDetailsApi } from "./apiCalls";
+import { approveUserApi, assignRoleApi, listUserApi, userDetailsApi } from "./apiCalls";
 
 export const profileUser = createAsyncThunk(
     "form/profileUser",
@@ -29,6 +29,19 @@ export const listUser = createAsyncThunk(
         }
     },
 )
+
+export const assignRole = createAsyncThunk(
+    "form/assignRole",
+    async (body: any, thunkAPI) => {
+        try {
+            const response = await assignRoleApi(body);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || "Something went wrong",
+            );
+        }
+    })
 
 export const approveUser = createAsyncThunk(
     "form/approveUSer",

@@ -11,6 +11,11 @@ export const listUserApi = async (body: any) => {
   return response.data;
 };
 
+export const assignRoleApi = async (body: any) => {
+  const response = await axiosInstance.post("/user/assign/role", body);
+  return response.data;
+};
+
 export const approveUserApi = async (body: any) => {
   const response = await axiosInstance.patch("/user/status", body);
   return response.data;
