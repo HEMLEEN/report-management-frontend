@@ -1,7 +1,8 @@
 import { Pencil, Plus, Trash2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { listCategory, listCompany } from "../../redux/slices/setup/thunkApi";
+import { createCompany, listCategory, listCompany } from "../../redux/slices/setup/thunkApi";
+import CreationFormModal from "../Admin/CreationFormModal";
 
 interface ApiRecord {
     _id?: string;
@@ -27,7 +28,7 @@ const Company = () => {
     const dispatch = useAppDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] =
-        useState<ApiRecord | null>(null);
+        useState<any | null>(null);
 
     // Search and pagination
     const [searchTerm, setSearchTerm] = useState("");
@@ -100,6 +101,7 @@ const Company = () => {
                 // Connect your user-update thunk here.
                 return;
             }
+            dispatch(createCompany({ name }));
 
             // Connect your user-create thunk here.
             await refresh();
@@ -142,7 +144,7 @@ const Company = () => {
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
                     >
                         <Plus size={18} />
-                        Add Report Mode
+                        Add Company
                     </button>
                 </div>
 
@@ -274,6 +276,16 @@ const Company = () => {
                     </table>
                 </div>
             </section>
+
+            {/* Create / Edit User Modal */}
+            {isModalOpen && (
+                <CreationFormModal
+                    type="company"
+                    editingItem={editingItem}
+                    onClose={closeModal}
+                    onSubmit={handleSave}
+                />
+            )}
         </div>
     )
 }

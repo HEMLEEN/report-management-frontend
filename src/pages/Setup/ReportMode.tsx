@@ -26,7 +26,7 @@ type NameFormValues = {
 type AssignFormValues = {
   reportModeId: string;
   category: string[];
-  compny: string[];
+  company: string[];
 };
 
 const ReportMode = () => {
@@ -60,7 +60,7 @@ const ReportMode = () => {
     defaultValues: {
       reportModeId: "",
       category: [],
-      compny: [],
+      company: [],
     },
   });
 
@@ -71,9 +71,9 @@ const ReportMode = () => {
 
   const selectedReportModeId = watchAssign("reportModeId");
   const selectedCategories = watchAssign("category");
-  const selectedCompanies = watchAssign("compny");
+  const selectedCompanies = watchAssign("company");
 
-  const { list, isReportModeLoading, reportModeError } = useAppSelector((state) => state.reportMode);
+  const { listOfReportMode, isReportModeLoading, reportModeError } = useAppSelector((state) => state.reportMode);
   const { listOfCategories, isCategoryLoading, categoryError } = useAppSelector((state) => state.category);
 
   // Replace these selectors with your actual category/company Redux slices.
@@ -124,7 +124,7 @@ const ReportMode = () => {
     resetAssign({
       reportModeId: "",
       category: [],
-      compny: [],
+      company: [],
     });
     setAssignOpen(true);
   };
@@ -134,11 +134,11 @@ const ReportMode = () => {
     resetAssign({
       reportModeId: "",
       category: [],
-      compny: [],
+      company: [],
     });
   };
 
-  const toggleSelection = (field: "category" | "compny", id: string) => {
+  const toggleSelection = (field: "category" | "company", id: string) => {
     const current =
       field === "category" ? selectedCategories : selectedCompanies;
 
@@ -173,13 +173,13 @@ const ReportMode = () => {
 
         console.log("Assign category payload:", payload);
       } else {
-        if (!data.compny.length) {
+        if (!data.company.length) {
           throw new Error("Please select at least one company.");
         }
 
         const payload = {
           reportModeId: data.reportModeId,
-          compny: data.compny,
+          company: data.company,
         };
 
         // TODO: Dispatch your company-assignment thunk here.
@@ -308,11 +308,11 @@ const ReportMode = () => {
 
             {reportModeError && <p className="text-sm text-red-500">{String(reportModeError)}</p>}
 
-            {!isReportModeLoading.list && list.length === 0 && (
+            {!isReportModeLoading.list && listOfReportMode.length === 0 && (
               <p className="text-sm text-gray-500">No report modes found.</p>
             )}
 
-            {list.map((item) => (
+            {listOfReportMode.map((item) => (
               <div
                 key={item._id}
                 className="flex items-center justify-between rounded-xl border p-4"
@@ -461,7 +461,7 @@ const ReportMode = () => {
                       (assignType === "Category" ? categories : companies).map(
                         (item) => {
                           const field =
-                            assignType === "Category" ? "category" : "compny";
+                            assignType === "Category" ? "category" : "company";
 
                           const checked =
                             field === "category"

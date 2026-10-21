@@ -12,7 +12,7 @@ export const listReportModeApi = async ({ name }: any) => {
 
 export const assignCategoryApi = async (body: any) => {
   const response = await axiosInstance.post(
-    "/report/mode/assign/category",
+    "/report/assign/category",
     body,
   );
   return response.data;
@@ -20,7 +20,7 @@ export const assignCategoryApi = async (body: any) => {
 
 export const assignCompanyApi = async (body: any) => {
   const response = await axiosInstance.post(
-    "/report/mode/assign/company",
+    "/report/assign/company",
     body,
   );
   return response.data;
@@ -37,7 +37,7 @@ export const listCategoryApi = async (body: any) => {
 };
 
 export const createCompanyApi = async ({ name }: any) => {
-  const response = await axiosInstance.post("/company", name);
+  const response = await axiosInstance.post("/company", { name });
   return response.data;
 };
 
