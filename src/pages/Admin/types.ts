@@ -92,4 +92,26 @@ export const defaultCards: AdminCard[] = [
         iconBg: "bg-orange-100",
         path: "/dashboard",
     },
+
+    {
+        id: "reportUi",
+        title: "Report UI",
+        description: "Mange your UI.",
+        icon: "Edit",
+        type: "reportUi",
+        iconColor: "text-orange-600",
+        iconBg: "bg-orange-100",
+        path: "/reportUi",
+    },
+
+    {
+        id: "dynamicUi",
+        title: "Dynamic schema UI",
+        description: "Mange your Dynamic schema UI.",
+        icon: "Edit",
+        type: "dynamicUi",
+        iconColor: "text-orange-600",
+        iconBg: "bg-orange-100",
+        path: "/ui/builder",
+    },
 ];

@@ -26,6 +26,7 @@ import AdminWorkspace from "./pages/Admin/AdminWorkspace";
 import ReportUI from "./pages/Report/ReportUI";
 import PreviewUIComponent from "./pages/Report/Preview";
 import ReportBuilder from "./pages/Report/ReportBuilder";
+import DynamicModel from "./pages/UIBuilder/DynamicModel";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
@@ -108,6 +109,7 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/preview/layout" element={<PreviewUIComponent />} />
         <Route path="/report/builder" element={<ReportBuilder />} />
+        <Route path="/ui/builder" element={<DynamicModel />} />
       </Route>
 
       <Route path="/reportUi"
