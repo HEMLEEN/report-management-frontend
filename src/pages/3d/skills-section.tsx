@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ImageStreamHero, type StreamImage } from "./image-stream-hero";
+import ScrollMorphHero, { type MorphItem } from "./ScrollMorphHero";
+import SkillView from "./SkillView";
 
 export interface SkillGroup { title: string; items: string[] }
 
@@ -14,55 +15,62 @@ interface SkillsSectionProps {
 
 const display = { fontFamily: "Anton, 'Bebas Neue', Impact, sans-serif" };
 
-/* Cards in the corridor are generated tiles (SVG data URIs), one per technology,
-   in the teal / blue / black / white palette, so no external photos are needed. */
-const palette = [
-  { bg: ["#2dd4bf", "#2563eb"], fg: "#ffffff", sub: "#ccfbf1" },
-  { bg: ["#000000", "#0b1f24"], fg: "#ffffff", sub: "#2dd4bf" },
-  { bg: ["#ffffff", "#e2e8f0"], fg: "#000000", sub: "#0f766e" },
-  { bg: ["#1d4ed8", "#000000"], fg: "#ffffff", sub: "#5eead4" },
+const heroItems: MorphItem[] = [
+  { title: "React", label: "Frontend" }, { title: "Node.js", label: "Backend" }, { title: "TypeScript", label: "Language" },
+  { title: "Next.js", label: "Frontend" }, { title: "PostgreSQL", label: "Database" }, { title: "MongoDB", label: "Database" },
+  { title: "Redis", label: "Cache" }, { title: "Docker", label: "DevOps" }, { title: "AWS", label: "Cloud" },
+  { title: "GraphQL", label: "API" }, { title: "Tailwind", label: "Styling" }, { title: "Firebase", label: "Platform" },
 ];
 
-function tile(title: string, label: string, i: number): StreamImage {
-  const c = palette[i % palette.length];
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 500">` +
-    `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c.bg[0]}"/><stop offset="1" stop-color="${c.bg[1]}"/></linearGradient></defs>` +
-    `<rect width="360" height="500" fill="url(#g)"/>` +
-    `<circle cx="300" cy="70" r="120" fill="none" stroke="${c.fg}" stroke-opacity=".18" stroke-width="2"/>` +
-    `<text x="28" y="48" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="${c.sub}">${label.toUpperCase()}</text>` +
-    `<text x="28" y="460" font-family="Impact,'Arial Black',sans-serif" font-size="${title.length > 8 ? 62 : 78}" fill="${c.fg}">${title.toUpperCase()}</text>` +
-    `</svg>`;
-  return { src: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`, alt: title };
-}
+const skills: any[] = [
+  {
+    title: "React",
+    label: "Frontend Development",
+    image: "/images/react-project.jpg",
+  },
+  {
+    title: "TypeScript",
+    label: "Programming Language",
+    image: "/images/typescript-project.jpg",
+  },
+  {
+    title: "Node.js",
+    label: "Backend Development",
+    image: "/images/backend-project.jpg",
+  },
+  {
+    title: "MongoDB",
+    label: "Database",
+    image: "/images/database-project.jpg",
+  },
+  {
+    title: "Next.js",
+    label: "Web Framework",
+    image: "/images/next-project.jpg",
+  },
+];
 
 export default function SkillsSection({ intro, groups, contactHref = "#contact" }: SkillsSectionProps) {
   const [open, setOpen] = useState(0);
 
-  const images = [
-    tile("React", "Frontend", 0), tile("Node.js", "Backend", 1), tile("TypeScript", "Language", 2),
-    tile("Next.js", "Frontend", 3), tile("PostgreSQL", "Database", 0), tile("MongoDB", "Database", 1),
-    tile("Redis", "Cache", 2), tile("Docker", "DevOps", 3), tile("AWS", "Cloud", 0),
-    tile("GraphQL", "API", 1), tile("Tailwind", "Styling", 2), tile("Firebase", "Platform", 3),
-  ];
-
   return (
     <section id="skills">
-      {/* Corridor of technology cards */}
-      <div className="p-3 pt-0">
-        <ImageStreamHero images={images} axis={58} speed={20} className="h-[78svh] min-h-[520px] rounded-3xl bg-black">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_58%,rgba(20,184,166,0.22),transparent_55%)]" />
-          <div className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-10 text-center text-white md:py-14">
-            <h2 style={display} className="text-[16vw] uppercase leading-[0.9] md:text-[8vw]">
-              Skills &amp;<br />Technologies
-            </h2>
-            <p className="max-w-md rounded-2xl bg-black/60 px-5 py-3 text-sm leading-relaxed text-white/85 backdrop-blur">{intro}</p>
-          </div>
-        </ImageStreamHero>
+      {/* The hero needs a fixed height: it positions cards from the container's measured size */}
+      <div className="h-[100svh] min-h-[640px] w-full">
+        <SkillView items={skills} title={undefined} />
+        {/* <ScrollMorphHero
+          items={heroItems}
+          title={<>Skills &amp;<br />Technologies</>}
+          subtitle={intro}
+          introTitle="What I build with"
+          introHint="Scroll to explore"
+          titleStyle={{ ...display, fontSize: "clamp(2.75rem, 8vw, 6rem)", fontWeight: 400 }}
+          cardStyle={display}
+        /> */}
       </div>
 
-      {/* Full, accessible list of everything in the corridor */}
-      <div className="bg-white px-6 py-16 md:px-12">
+      {/* Full, accessible list of everything in the hero */}
+      {/* <div className="bg-white px-6 py-16 md:px-12">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row">
           <p className="max-w-xl text-xl font-medium leading-snug md:text-2xl">Everything I work with, by area.</p>
           <motion.a
@@ -101,7 +109,7 @@ export default function SkillsSection({ intro, groups, contactHref = "#contact" 
             );
           })}
         </ul>
-      </div>
+      </div> */}
     </section>
   );
 }
