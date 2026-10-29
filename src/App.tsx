@@ -27,6 +27,8 @@ import ReportUI from "./pages/Report/ReportUI";
 import PreviewUIComponent from "./pages/Report/Preview";
 import ReportBuilder from "./pages/Report/ReportBuilder";
 import DynamicModel from "./pages/UIBuilder/DynamicModel";
+import Portfoio from "./pages/Portfolio";
+import AnimateView from "./pages/3d/AnimateView";
 
 function AppRoutes() {
   const login = useAppSelector((state) => state.auth.login?.data);
@@ -39,6 +41,8 @@ function AppRoutes() {
       <Route path="/login" element={token ? <Navigate to="/dashboard" replace /> : <Login />} />
       <Route path="/signup" element={token ? <Navigate to="/dashboard" replace /> : <SignupForm />} />
       <Route path="/unauthorized" element={token ? <Unauthorized /> : <Navigate to="/login" replace />} />
+      <Route path="/prf" element={<Portfoio />} />
+      <Route path="/3d" element={<AnimateView />} />
 
       {/* Setup: SA and ASC only */}
       <Route path="/setup"
